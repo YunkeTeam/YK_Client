@@ -1,18 +1,12 @@
-<!-- =========================================================================================
-  File Name: DataListListView.vue
-  Description: Data List - List View
-  ----------------------------------------------------------------------------------------
-  Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-  Author: Pixinvent
-  Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
+<!--
+  信息管理界面
+-->
 <template>
   <div id="data-list-list-view" class="data-list-container">
 
     <add-new-data-sidebar :isSidebarActive="addNewDataSidebar" @closeSidebar="addNewDataSidebar = false" />
 
-    <vs-table ref="table" multiple v-model="selected" pagination :max-items="itemsPerPage" search :data="users">
+    <vs-table ref="table" multiple v-model="selected" pagination :max-items="itemsPerPage" search :data="post">
 
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
 
@@ -22,23 +16,17 @@
           <vs-dropdown vs-trigger-click class="cursor-pointer mr-4 mb-4">
 
             <div class="p-4 shadow-drop rounded-lg d-theme-dark-bg cursor-pointer flex items-center justify-center text-lg font-medium w-32">
-              <span class="mr-2">Actions</span>
+              <span class="mr-2">操作</span>
               <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
             </div>
 
             <vs-dropdown-menu>
 
               <vs-dropdown-item>
-                <span>Delete</span>
+                <span @click="clickDelete">删除</span>
               </vs-dropdown-item>
               <vs-dropdown-item>
-                <span>Archive</span>
-              </vs-dropdown-item>
-              <vs-dropdown-item>
-                <span>Print</span>
-              </vs-dropdown-item>
-              <vs-dropdown-item>
-                <span>Another Action</span>
+                <span @click="clickUpdate">更新状态</span>
               </vs-dropdown-item>
             </vs-dropdown-menu>
           </vs-dropdown>
@@ -46,14 +34,14 @@
           <!-- ADD NEW -->
           <div class="p-3 mb-4 mr-4 rounded-lg cursor-pointer flex items-center justify-between text-lg font-medium text-base text-primary border border-solid border-primary" @click="addNewDataSidebar = true">
               <feather-icon icon="PlusIcon" svgClasses="h-4 w-4" />
-              <span class="ml-2 text-base text-primary">Add New</span>
+              <span class="ml-2 text-base text-primary">发布消息</span>
           </div>
         </div>
 
         <!-- ITEMS PER PAGE -->
         <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
           <div class="p-4 border border-solid d-theme-border-grey-light rounded-full d-theme-dark-bg cursor-pointer flex items-center justify-between font-medium">
-            <span class="mr-2">{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ users.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : users.length }} of {{ users.length }}</span>
+            <span class="mr-2">{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ post.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : post.length }} of {{ post.length }}</span>
             <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
           <!-- <vs-button class="btn-drop" type="line" color="primary" icon-pack="feather" icon="icon-chevron-down"></vs-button> -->
@@ -76,36 +64,30 @@
       </div>
 
       <template slot="thead">
-        <vs-th sort-key="name">Name</vs-th>
-        <vs-th sort-key="category">Category</vs-th>
-        <vs-th sort-key="popularity">Popularity</vs-th>
-        <vs-th sort-key="order_status">Order Status</vs-th>
-        <vs-th sort-key="price">Price</vs-th>
+        <vs-th sort-key="name">标题</vs-th>
+        <vs-th sort-key="category">类型</vs-th>
+        <vs-th sort-key="order_status">信息状态</vs-th>
+        <vs-th sort-key="release_time">发布时间</vs-th>
       </template>
 
-        <template slot-scope="{data}">
+      <template>
           <tbody>
-            <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
+            <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in post">
 
               <vs-td>
-                <p class="product-name font-medium">{{ tr.name }}</p>
+                <p class="product-name font-medium">{{ tr.title }}</p>
               </vs-td>
 
               <vs-td>
-                <p class="product-category">{{ tr.category }}</p>
+                <p class="product-category">{{ tr.type }}</p>
               </vs-td>
 
               <vs-td>
-                {{ typeof tr.popularity }}
-                <vs-progress :percent="Number(tr.popularity)" :color="getPopularityColor(Number(tr.popularity))" class="shadow-md" />
+                <vs-chip :color="getOrderStatusColor(tr.status)" class="product-order-status">{{ tr.status }}</vs-chip>
               </vs-td>
 
               <vs-td>
-                <vs-chip :color="getOrderStatusColor(tr.order_status)" class="product-order-status">{{ tr.order_status }}</vs-chip>
-              </vs-td>
-
-              <vs-td>
-                <p class="product-price">${{ tr.price }}</p>
+                <p class="product-price">{{ tr.release_time }}</p>
               </vs-td>
 
             </vs-tr>
@@ -116,7 +98,7 @@
 </template>
 
 <script>
-import AddNewDataSidebar from '../../../pages/AddNewDataSidebar.vue';
+import AddNewDataSidebar from './AddNewDataSidebar.vue';
 
 export default {
   components: {
@@ -129,6 +111,26 @@ export default {
       itemsPerPage: 4,
       isMounted: false,
       addNewDataSidebar: false,
+      post: [
+        {
+          title: '意大利皮鞋',
+          type: '二手商品',
+          status: 'running',
+          release_time: '2020-3-21'
+        },
+        {
+          title: '招小牛马',
+          type: '兼职信息',
+          status: 'completed',
+          release_time: '2020-2-21'
+        },
+        {
+          title: '丢失了校园一卡通',
+          type: '失物招领',
+          status: 'canceled',
+          release_time: '2020-3-21'
+        }
+      ]
     }
   },
   computed: {
@@ -141,8 +143,8 @@ export default {
   },
   methods: {
     getOrderStatusColor(status) {
-      if(status == 'on hold') return "warning"
-      if(status == 'delivered') return "success"
+      if(status == 'running') return "warning"
+      if(status == 'completed') return "success"
       if(status == 'canceled') return "danger"
       return "primary"
     },
@@ -164,6 +166,12 @@ export default {
         return obj
       });
       return formattedData
+    },
+    clickDelete() {
+      alert("点击了删除按钮")
+    },
+    clickUpdate() {
+      alert("点击了更新按钮")
     }
   },
   created() {

@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import DropdownDefault from './DropdownDefault.vue'
-import DropdownColor from './DropdownColor.vue'
-import DropdownGroupOption from './DropdownGroupOption.vue'
-import DropdownCustomContent from './DropdownCustomContent.vue'
-import DropdownButton from './DropdownButton.vue'
+import DropdownDefault from './sub/DropdownDefault.vue'
+import DropdownColor from './sub/DropdownColor.vue'
+import DropdownGroupOption from './sub/DropdownGroupOption.vue'
+import DropdownCustomContent from './sub/DropdownCustomContent.vue'
+import DropdownButton from './sub/DropdownButton.vue'
 
 export default{
     components: {

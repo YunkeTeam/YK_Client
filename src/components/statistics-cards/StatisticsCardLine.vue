@@ -1,11 +1,6 @@
-<!-- =========================================================================================
-    File Name: StatisticsCard.vue
-    Description: Statistics card component
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
+<!-- 
+    统计卡组件
+ -->
 
 <template>
     <vx-card class="overflow-hidden">

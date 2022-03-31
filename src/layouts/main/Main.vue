@@ -25,7 +25,7 @@
             :hideScrollToTop="hideScrollToTop"
             @toggleHideScrollToTop="toggleHideScrollToTop"
             />
-        <vx-sidebar :sidebarItems="sidebarItems" :logo="require('@/assets/images/logo/logo.png')" title="Vuesax" parent=".layout--main" />
+        <vx-sidebar :sidebarItems="sidebarItems" :logo="require('@/assets/images/logo/logo.png')" title="YUNKE" parent=".layout--main" />
 
         <div id="content-area" :class="[contentAreaClass, {'show-overlay': bodyOverlay}]">
 
@@ -118,37 +118,31 @@ export default {
             windowWidth: window.innerWidth, //width of windows
             hideScrollToTop: themeConfig.hideScrollToTop,
             disableThemeTour: themeConfig.disableThemeTour,
+            // 界面侧边导航栏数据
             steps: [
                 {
                     target: '#btnSidebarToggler',
-                    content: 'Toggle Collapse Sidebar.'
+                    content: '切换折叠侧边栏。'
                 },
                 {
                     target: '.vx-navbar__starred-pages',
-                    content: 'Create your own bookmarks. You can also re-arrange them using drag & drop.'
+                    content: '创建自己的书签。 您还可以使用拖放重新排列它们。'
                 },
                 {
                     target: '.i18n-locale',
-                    content: 'You can change language from here.'
+                    content: '您可以从这里更改语言。'
                 },
                 {
                     target: '.navbar-fuzzy-search',
-                    content: 'Try fuzzy search to visit pages in flash.'
+                    content: '尝试模糊搜索以访问 Flash 中的页面。'
                 },
                 {
                     target: '.customizer-btn',
-                    content: 'Customize template based your preference',
+                    content: '根据您的喜好自定义模板',
                     params: {
                         placement: 'left'
                     }
-                },
-                {
-                    target: '.vs-button.buy-now',
-                    content: 'Buy this awesomeness at affordable price!',
-                    params: {
-                        placement: 'top'
-                    }
-                },
+                }
             ]
         }
     },

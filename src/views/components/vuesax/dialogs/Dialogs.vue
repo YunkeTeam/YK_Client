@@ -17,9 +17,9 @@
 </template>
 
 <script>
-import DialogsAlert from './DialogsAlert.vue'
-import DialogsConfirm from './DialogsConfirm.vue'
-import DialogsPrompt from './DialogsPrompt.vue'
+import DialogsAlert from './sub/DialogsAlert.vue'
+import DialogsConfirm from './sub/DialogsConfirm.vue'
+import DialogsPrompt from './sub/DialogsPrompt.vue'
 
 export default{
     components: {

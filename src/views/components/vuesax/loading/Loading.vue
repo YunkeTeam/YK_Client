@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import LoadingDefault from './LoadingDefault.vue'
-import LoadingType from './LoadingType.vue'
-import LoadingColor from './LoadingColor.vue'
-import LoadingBackground from './LoadingBackground.vue'
-import LoadingContained from './LoadingContained.vue'
+import LoadingDefault from './sub/LoadingDefault.vue'
+import LoadingType from './sub/LoadingType.vue'
+import LoadingColor from './sub/LoadingColor.vue'
+import LoadingBackground from './sub/LoadingBackground.vue'
+import LoadingContained from './sub/LoadingContained.vue'
 
 export default{
     components: {

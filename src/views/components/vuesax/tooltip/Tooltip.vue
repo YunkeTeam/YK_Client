@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import TooltipDefault from './TooltipDefault.vue'
-import TooltipPosition from './TooltipPosition.vue'
-import TooltipDelay from './TooltipDelay.vue'
-import TooltipColor from './TooltipColor.vue'
-import TooltipTitle from './TooltipTitle.vue'
+import TooltipDefault from './sub/TooltipDefault.vue'
+import TooltipPosition from './sub/TooltipPosition.vue'
+import TooltipDelay from './sub/TooltipDelay.vue'
+import TooltipColor from './sub/TooltipColor.vue'
+import TooltipTitle from './sub/TooltipTitle.vue'
 
 export default{
     components: {

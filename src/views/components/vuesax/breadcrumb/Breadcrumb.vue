@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import BreadcrumbDefault from './BreadcrumbDefault.vue'
-import BreadcrumbColor from './BreadcrumbColor.vue'
-import BreadcrumbSeparator from './BreadcrumbSeparator.vue'
-import BreadcrumbSlot from './BreadcrumbSlot.vue'
-import BreadcrumbAlignment from './BreadcrumbAlignment.vue'
+import BreadcrumbDefault from './sub/BreadcrumbDefault.vue'
+import BreadcrumbColor from './sub/BreadcrumbColor.vue'
+import BreadcrumbSeparator from './sub/BreadcrumbSeparator.vue'
+import BreadcrumbSlot from './sub/BreadcrumbSlot.vue'
+import BreadcrumbAlignment from './sub/BreadcrumbAlignment.vue'
 
 export default{
     components: {

@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import CollapseDefault from './CollapseDefault.vue'
-import CollapseAccordion from './CollapseAccordion.vue'
-import CollapseType from './CollapseType.vue'
-import CollapseOpenHover from './CollapseOpenHover.vue'
-import CollapseChangeArrowIcon from './CollapseChangeArrowIcon.vue'
+import CollapseDefault from './sub/CollapseDefault.vue'
+import CollapseAccordion from './sub/CollapseAccordion.vue'
+import CollapseType from './sub/CollapseType.vue'
+import CollapseOpenHover from './sub/CollapseOpenHover.vue'
+import CollapseChangeArrowIcon from './sub/CollapseChangeArrowIcon.vue'
 
 export default{
     components: {

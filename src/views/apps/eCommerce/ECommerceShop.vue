@@ -1,12 +1,6 @@
-<!-- =========================================================================================
-    File Name: ECommerceShop.vue
-    Description: eCommerce Shop Page
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
+<!-- 
+    百事通：信息发布平台
+-->
 <template>
     <div>
         <ais-instant-search
@@ -79,8 +73,8 @@
 
                     <div class="p-6 filter-container">
 
-                        <!-- MULTI RANGE -->
-                        <h6 class="font-bold mb-3">Multi Range</h6>
+                        <!-- 时间范围 -->
+                        <h6 class="font-bold mb-3">时间范围</h6>
                         <ais-numeric-menu attribute="price" :items="numericItems">
                             <ul slot-scope="{ items, refine, createURL }">
                                 <li
@@ -96,25 +90,8 @@
                         </ais-numeric-menu>
 
                         <vs-divider />
-
-                        <!-- PRICE SLIDER -->
-                        <h6 class="font-bold mb-3">Slider</h6>
-                        <ais-range-input attribute="price">
-                            <div slot-scope="{ currentRefinement, range, refine }">
-                                <vs-slider
-                                    class="algolia-price-slider"
-                                    text-fixed="$"
-                                    :min="range.min"
-                                    :max="range.max"
-                                    :value="toValue(currentRefinement, range)"
-                                    @input="refine({min: $event[0], max: $event[1]})" />
-                            </div>
-                        </ais-range-input>
-
-                        <vs-divider />
-
-                        <!-- CATEGORIES -->
-                        <h6 class="font-bold mb-4">Category</h6>
+                        <!-- 信息类型 -->
+                        <h6 class="font-bold mb-4">信息类型</h6>
                         <ais-hierarchical-menu :attributes="algoliaCategories">
                             <div slot-scope="{
                               items,
@@ -128,43 +105,6 @@
                                 </ul>
                             </div>
                         </ais-hierarchical-menu>
-
-                        <vs-divider />
-
-                        <!-- Brands -->
-                        <h6 class="font-bold mb-4">Brand</h6>
-                        <ais-refinement-list attribute="brand">
-                            <div slot-scope="{
-                              items,
-                              isFromSearch,
-                              refine,
-                            }">
-                                <ul>
-                                    <li v-if="isFromSearch && !items.length">No results.</li>
-                                    <li v-for="item in items" :key="item.value" class="mb-2 flex items-center justify-between">
-                                        <vs-checkbox v-model="item.isRefined" class="ml-0" @click="refine(item.value)">{{ item.label }}</vs-checkbox>
-                                        <span>{{ item.count }}</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </ais-refinement-list>
-                        <vs-divider />
-
-                        <!-- Rating -->
-                        <h6 class="font-bold mb-3">Rating</h6>
-                        <ais-rating-menu attribute="rating">
-                            <ul slot-scope="{ items, refine, createURL }">
-                                <li v-for="item in items" :key="item.value" class="mb-2">
-                                    <div @click.prevent="refine(item.value)" class="flex justify-between items-center">
-                                        <div class="flex items-center flex-wrap">
-                                            <feather-icon icon="StarIcon" :svgClasses="[{'text-warning': full, 'text-grey': !full, 'ml-1' : index}, 'cursor-pointer stroke-current h-6 w-6']" v-for="(full, index) in item.stars" :key="index" />
-                                            <span class="ml-2">&amp; up</span>
-                                        </div>
-                                        <span>({{ item.count }})</span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </ais-rating-menu>
 
                         <vs-divider />
 
@@ -209,35 +149,7 @@
                             <template v-if="currentItemView == 'item-grid-view'">
                                 <div class="items-grid-view vx-row match-height">
                                     <div class="vx-col lg:w-1/3 sm:w-1/2 w-full" v-for="item in items" :key="item.objectID">
-
-                                        <item-grid-view :item="item">
-
-                                            <!-- SLOT: ACTION BUTTONS -->
-                                            <template slot="action-buttons">
-                                                <div class="flex flex-wrap">
-
-                                                    <!-- PRIMARY BUTTON: ADD TO WISH LIST -->
-                                                    <div
-                                                        class="item-view-primary-action-btn p-3 flex flex-grow items-center justify-center cursor-pointer"
-                                                        @click="toggleItemInWishList(item)">
-                                                        <feather-icon icon="HeartIcon" :svgClasses="[{'text-danger fill-current' : isInWishList(item.objectID)}, 'h-4 w-4']" />
-
-                                                        <span class="text-sm font-semibold ml-2">WISHLIST</span>
-                                                    </div>
-
-                                                    <!-- SECONDARY BUTTON: ADD-TO/VIEW-IN CART -->
-                                                    <div
-                                                        class="item-view-secondary-action-btn bg-primary p-3 flex flex-grow items-center justify-center text-white cursor-pointer"
-                                                        @click="cartButtonClicked(item)">
-                                                        <feather-icon icon="ShoppingBagIcon" svgClasses="h-4 w-4" />
-
-                                                        <span class="text-sm font-semibold ml-2" v-if="isInCart(item.objectID)">VIEW IN CART</span>
-                                                        <span class="text-sm font-semibold ml-2" v-else>ADD TO CART</span>
-                                                    </div>
-                                                </div>
-                                            </template>
-                                        </item-grid-view>
-
+                                        <item-grid-view :item="item"></item-grid-view>
                                     </div>
                                 </div>
                             </template>
@@ -293,9 +205,6 @@
                             @input="(val) => { refine(val - 1) }" />
                         </div>
                     </ais-pagination>
-
-                    <!-- ALGOLIA LOGO -->
-                    <img class="flex mt-4 mx-auto h-8" src="@/assets/images/pages/eCommerce/Algolia-logo.png" alt="algolia-logo">
                 </div>
             </div>
         </ais-instant-search>
@@ -322,11 +231,9 @@ export default {
             windowWidth: window.innerWidth,
             currentItemView: 'item-grid-view',
             numericItems: [
-              { label: 'All' },
-              { label: '<= $10', end: 10 },
-              { label: '$10 - $100', start: 10, end: 100 },
-              { label: '$100 - $500', start: 100, end: 500 },
-              { label: '>= $500', start: 500 },
+              { label: '所有' },
+              { label: '今天', end: 10 },
+              { label: '昨天', start: 10, end: 100 },
             ],
             algoliaCategories: [
               'hierarchicalCategories.lvl0',

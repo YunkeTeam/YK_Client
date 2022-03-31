@@ -69,18 +69,18 @@
 </template>
 
 <script>
-import DatepickerDefault from './DatepickerDefault.vue'
-import DatepickerFormat from './DatepickerFormat.vue'
-import DatepickerMinMaxDateRange from './DatepickerMinMaxDateRange.vue'
-import DatepickerHighlightDates from './DatepickerHighlightDates.vue'
-import DatepickerInline from './DatepickerInline.vue'
-import DatepickerOpenProgramatically from './DatepickerOpenProgramatically.vue'
-import DatepickerTranslation from './DatepickerTranslation.vue'
-import DatepickerRtl from './DatepickerRtl.vue'
-import DatepickerDayViewOnly from './DatepickerDayViewOnly.vue'
-import DatepickerMonthViewOnly from './DatepickerMonthViewOnly.vue'
-import DatepickerDateMonthViewOnly from './DatepickerDateMonthViewOnly.vue'
-import DatepickerMonthYearViewOnly from './DatepickerMonthYearViewOnly.vue'
+import DatepickerDefault from './sub/DatepickerDefault.vue'
+import DatepickerFormat from './sub/DatepickerFormat.vue'
+import DatepickerMinMaxDateRange from './sub/DatepickerMinMaxDateRange.vue'
+import DatepickerHighlightDates from './sub/DatepickerHighlightDates.vue'
+import DatepickerInline from './sub/DatepickerInline.vue'
+import DatepickerOpenProgramatically from './sub/DatepickerOpenProgramatically.vue'
+import DatepickerTranslation from './sub/DatepickerTranslation.vue'
+import DatepickerRtl from './sub/DatepickerRtl.vue'
+import DatepickerDayViewOnly from './sub/DatepickerDayViewOnly.vue'
+import DatepickerMonthViewOnly from './sub/DatepickerMonthViewOnly.vue'
+import DatepickerDateMonthViewOnly from './sub/DatepickerDateMonthViewOnly.vue'
+import DatepickerMonthYearViewOnly from './sub/DatepickerMonthYearViewOnly.vue'
 
 export default {
     components: {

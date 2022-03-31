@@ -20,12 +20,12 @@
 </template>
 
 <script>
-import AlertDefault from './AlertDefault.vue'
-import AlertTitle from './AlertTitle.vue'
-import AlertColor from './AlertColor.vue'
-import AlertClosable from './AlertClosable.vue'
-import AlertIcon from './AlertIcon.vue'
-import AlertExample from './AlertExample.vue'
+import AlertDefault from './sub/AlertDefault.vue'
+import AlertTitle from './sub/AlertTitle.vue'
+import AlertColor from './sub/AlertColor.vue'
+import AlertClosable from './sub/AlertClosable.vue'
+import AlertIcon from './sub/AlertIcon.vue'
+import AlertExample from './sub/AlertExample.vue'
 
 export default{
     components: {

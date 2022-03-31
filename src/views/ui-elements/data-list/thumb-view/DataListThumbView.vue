@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import AddNewDataSidebar from '../AddNewDataSidebar.vue';
+import AddNewDataSidebar from '../../../pages/AddNewDataSidebar.vue';
 
 export default {
   components: {

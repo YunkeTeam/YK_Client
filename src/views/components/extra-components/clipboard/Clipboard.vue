@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import ClipboardDirective from './ClipboardDirective.vue'
-import ClipboardWithoutDirective from './ClipboardWithoutDirective.vue'
+import ClipboardDirective from './sub/ClipboardDirective.vue'
+import ClipboardWithoutDirective from './sub/ClipboardWithoutDirective.vue'
 
 export default{
     components: {

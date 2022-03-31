@@ -1,5 +1,5 @@
 <!-- =========================================================================================
-    File Name: RadioDefault.vue
+    File Name: FilterRadio.vue
     Description: Rendering default radio
     ----------------------------------------------------------------------------------------
     Item Name: Vuesax Admin - VueJS Dashboard Admin Template

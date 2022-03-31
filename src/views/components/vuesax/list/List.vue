@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import ListBasic from './ListBasic.vue'
-import ListHeader from './ListHeader.vue'
-import ListIcon from './ListIcon.vue'
-import ListContent from './ListContent.vue'
-import ListAvatar from './ListAvatar.vue'
+import ListBasic from './sub/ListBasic.vue'
+import ListHeader from './sub/ListHeader.vue'
+import ListIcon from './sub/ListIcon.vue'
+import ListContent from './sub/ListContent.vue'
+import ListAvatar from './sub/ListAvatar.vue'
 
 export default{
     components: {

@@ -27,19 +27,19 @@
 </template>
 
 <script>
-import ButtonFilled from './ButtonFilled.vue'
-import ButtonBorder from './ButtonBorder.vue'
-import ButtonFlat from './ButtonFlat.vue'
-import ButtonLineDown from './ButtonLineDown.vue'
-import ButtonGradient from './ButtonGradient.vue'
-import ButtonRelief from './ButtonRelief.vue'
-import ButtonColor from './ButtonColor.vue'
-import ButtonTextColor from './ButtonTextColor.vue'
-import ButtonIcon from './ButtonIcon.vue'
-import ButtonIconOnly from './ButtonIconOnly.vue'
-import ButtonSize from './ButtonSize.vue'
-import ButtonRouter from './ButtonRouter.vue'
-import ButtonLink from './ButtonLink.vue'
+import ButtonFilled from './sub/ButtonFilled.vue'
+import ButtonBorder from './sub/ButtonBorder.vue'
+import ButtonFlat from './sub/ButtonFlat.vue'
+import ButtonLineDown from './sub/ButtonLineDown.vue'
+import ButtonGradient from './sub/ButtonGradient.vue'
+import ButtonRelief from './sub/ButtonRelief.vue'
+import ButtonColor from './sub/ButtonColor.vue'
+import ButtonTextColor from './sub/ButtonTextColor.vue'
+import ButtonIcon from './sub/ButtonIcon.vue'
+import ButtonIconOnly from './sub/ButtonIconOnly.vue'
+import ButtonSize from './sub/ButtonSize.vue'
+import ButtonRouter from './sub/ButtonRouter.vue'
+import ButtonLink from './sub/ButtonLink.vue'
 
 export default{
     components: {

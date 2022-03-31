@@ -1,12 +1,6 @@
-<!-- =========================================================================================
-    File Name: VxCard.vue
-    Description: Card Component
-    Component Name: VxCard
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
+<!-- 
+    帖子模板组件
+ -->
 
  <template>
     <div class="vx-card" ref="card" :class="[

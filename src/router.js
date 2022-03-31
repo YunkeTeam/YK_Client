@@ -42,25 +42,37 @@ const router = new Router({
         // =============================================================================
                 {
                     path: '/',
-                    redirect: '/dashboard/analytics'
+                    redirect: '/home/personalData'
                 },
                 {
-                    path: '/dashboard/analytics',
+                    path: '/home/personalData',
                     name: 'dashboardAnalytics',
-                    component: () => import('./views/DashboardAnalytics.vue'),
+                    component: () => import('./views/pages/PersonalData.vue'),
                     meta: {
                         rule: 'editor'
                     }
                 },
+                // {
+                //     path: '/dashboard/ecommerce',
+                //     name: 'dashboardECommerce',
+                //     component: () => import('./views/pages/Post.vue'),
+                //     meta: {
+                //         rule: 'admin'
+                //     }
+                // },
                 {
-                    path: '/dashboard/ecommerce',
-                    name: 'dashboardECommerce',
-                    component: () => import('./views/DashboardECommerce.vue'),
+                    path: '/home/post',
+                    name: 'post',
+                    component: () => import('./views/pages/Post.vue'),
                     meta: {
+                        breadcrumb: [
+                            { title: 'Home', url: '/' },
+                            { title: 'community', active: true},
+                        ],
+                        pageTitle: '社区',
                         rule: 'admin'
-                    }
+                    },
                 },
-
 
         // =============================================================================
         // Application Routes
@@ -112,10 +124,10 @@ const router = new Router({
                     meta: {
                         breadcrumb: [
                             { title: 'Home', url: '/' },
-                            { title: 'eCommerce'},
-                            { title: 'Shop', active: true },
+                            { title: '百事通'},
+                            { title: '信息平台', active: true },
                         ],
-                        pageTitle: 'Shop',
+                        pageTitle: '信息平台',
                         rule: 'editor'
                     }
                 },
@@ -151,16 +163,32 @@ const router = new Router({
         // UI ELEMENTS
         // =============================================================================
                 {
-                    path: '/ui-elements/data-list/list-view',
+                    path: '/apps/knowEverything/information',
                     name: 'dataListListView',
-                    component: () => import('@/views/ui-elements/data-list/list-view/DataListListView.vue'),
+                    component: () => import('@/views/pages/Information.vue'),
                     meta: {
                         breadcrumb: [
                             { title: 'Home', url: '/' },
-                            { title: 'Data List'},
-                            { title: 'List View', active: true },
+                            { title: '应用'},
+                            { title: '百事通'},
+                            { title: '信息平台', active: true },
                         ],
-                        pageTitle: 'List View',
+                        pageTitle: '信息平台',
+                        rule: 'editor'
+                    },
+                },
+                {
+                    path: '/apps/knowEverything/informationManage',
+                    name: 'informationManage',
+                    component: () => import('@/views/pages/InformationManage.vue'),
+                    meta: {
+                        breadcrumb: [
+                            { title: 'Home', url: '/' },
+                            { title: '应用'},
+                            { title: '百事通'},
+                            { title: '管理信息', active: true },
+                        ],
+                        pageTitle: '信息列表',
                         rule: 'editor'
                     },
                 },

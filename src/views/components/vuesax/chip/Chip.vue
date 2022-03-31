@@ -20,12 +20,12 @@
 </template>
 
 <script>
-import ChipDefault from './ChipDefault.vue'
-import ChipColor from './ChipColor.vue'
-import ChipIcon from './ChipIcon.vue'
-import ChipClosable from './ChipClosable.vue'
-import ChipAddRemove from './ChipAddRemove.vue'
-import ChipCustomizeCloseClearChipIcon from './ChipCustomizeCloseClearChipIcon.vue'
+import ChipDefault from './sub/ChipDefault.vue'
+import ChipColor from './sub/ChipColor.vue'
+import ChipIcon from './sub/ChipIcon.vue'
+import ChipClosable from './sub/ChipClosable.vue'
+import ChipAddRemove from './sub/ChipAddRemove.vue'
+import ChipCustomizeCloseClearChipIcon from './sub/ChipCustomizeCloseClearChipIcon.vue'
 
 export default{
     components: {

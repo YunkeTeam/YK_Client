@@ -12,31 +12,16 @@
         <div class="vx-col" :class="gridColumnWidth" v-for="item in items" :key="item.objectID"> -->
             <vx-card class="grid-view-item mb-base overflow-hidden">
                 <template slot="no-body">
-
-                    <!-- ITEM IMAGE -->
-                    <div class="item-img-container bg-white h-64 flex items-center justify-center mb-4">
-                        <img :src="item.image" :alt="item.name" class="grid-view-img px-4">
-                    </div>
-                    <div class="item-details px-4">
-
-                        <!-- RATING & PRICE -->
-                        <div class="flex justify-between items-center">
-                            <div class="bg-primary flex text-white py-1 px-2 rounded">
-                                <span class="text-sm mr-2">{{ item.rating }}</span>
-                                <feather-icon icon="StarIcon" svgClasses="h-4 w-4" />
-                            </div>
-                            <h6 class="font-bold">${{ item.price }}</h6>
-                        </div>
-
-                        <!-- TITLE & DESCRIPTION -->
-                        <div class="my-4">
-                            <h6 class="truncate font-semibold mb-1">{{ item.name }}</h6>
-                            <p class="item-description truncate text-sm">{{ item.description }}</p>
-                        </div>
-                    </div>
-
-                    <!-- SLOT: ACTION BUTTONS -->
-                    <slot name="action-buttons" />
+                  <div slot="no-body">
+                    <img :src="require(`@/assets/images/pages/${card_1.contentImg1}`)" alt="content-img" class="responsive card-img-top">
+                  </div>
+                  <h5 class="mb-2">{{ card_1.title }}</h5>
+                  <p class="text-grey">{{ card_1.subtitle }}</p>
+                  <p class="text-grey">{{ card_1.subtitle_2 }}</p>
+                  <div class="flex justify-between flex-wrap">
+                    <vs-button class="mt-4 shadow-lg" type="gradient" color="#7367F0" gradient-color-secondary="#CE9FFC">Download</vs-button>
+                    <vs-button class="mt-4" type="border" color="#b9b9b9">View All</vs-button>
+                  </div>
                 </template>
             </vx-card>
        <!--  </div>

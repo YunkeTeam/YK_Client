@@ -18,10 +18,10 @@
 </template>
 
 <script>
-import PopupDefault from './PopupDefault.vue'
-import PopupInnerPopup from './PopupInnerPopup.vue'
-import PopupFullscreen from './PopupFullscreen.vue'
-import PopupBackground from './PopupBackground.vue'
+import PopupDefault from './sub/PopupDefault.vue'
+import PopupInnerPopup from './sub/PopupInnerPopup.vue'
+import PopupFullscreen from './sub/PopupFullscreen.vue'
+import PopupBackground from './sub/PopupBackground.vue'
 
 export default{
     components: {

@@ -18,10 +18,10 @@
 </template>
 
 <script>
-import ButtonGroupBasic from './ButtonGroupBasic.vue'
-import ButtonGroupToolbar from './ButtonGroupToolbar.vue'
-import ButtonGroupSize from './ButtonGroupSize.vue'
-import ButtonGroupVertical from './ButtonGroupVertical.vue'
+import ButtonGroupBasic from './sub/ButtonGroupBasic.vue'
+import ButtonGroupToolbar from './sub/ButtonGroupToolbar.vue'
+import ButtonGroupSize from './sub/ButtonGroupSize.vue'
+import ButtonGroupVertical from './sub/ButtonGroupVertical.vue'
 
 export default {
   components: {

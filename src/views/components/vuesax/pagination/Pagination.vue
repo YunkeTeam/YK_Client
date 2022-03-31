@@ -20,12 +20,12 @@
 </template>
 
 <script>
-import PaginationDefault from './PaginationDefault.vue'
-import PaginationIcon from './PaginationIcon.vue'
-import PaginationLinksLimit from './PaginationLinksLimit.vue'
-import PaginationGoTo from './PaginationGoTo.vue'
-import PaginationColor from './PaginationColor.vue'
-import PaginationProgrammaticIncDec from './PaginationProgrammaticIncDec.vue'
+import PaginationDefault from './sub/PaginationDefault.vue'
+import PaginationIcon from './sub/PaginationIcon.vue'
+import PaginationLinksLimit from './sub/PaginationLinksLimit.vue'
+import PaginationGoTo from './sub/PaginationGoTo.vue'
+import PaginationColor from './sub/PaginationColor.vue'
+import PaginationProgrammaticIncDec from './sub/PaginationProgrammaticIncDec.vue'
 
 export default{
     components: {

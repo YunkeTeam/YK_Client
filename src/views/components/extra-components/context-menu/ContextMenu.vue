@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import ContextMenuSimple from './ContextMenuSimple.vue'
-import ContextMenuClickNotClose from './ContextMenuClickNotClose.vue'
+import ContextMenuSimple from './sub/ContextMenuSimple.vue'
+import ContextMenuClickNotClose from './sub/ContextMenuClickNotClose.vue'
 
 export default{
   components: {

@@ -21,13 +21,13 @@
 </template>
 
 <script>
-import SliderDefault from './SliderDefault.vue'
-import SliderColor from './SliderColor.vue'
-import SliderTicks from './SliderTicks.vue'
-import SliderRange from './SliderRange.vue'
-import SliderIcon from './SliderIcon.vue'
-import SliderTextFixed from './SliderTextFixed.vue'
-import SliderChangeMethod from './SliderChangeMethod.vue'
+import SliderDefault from './sub/SliderDefault.vue'
+import SliderColor from './sub/SliderColor.vue'
+import SliderTicks from './sub/SliderTicks.vue'
+import SliderRange from './sub/SliderRange.vue'
+import SliderIcon from './sub/SliderIcon.vue'
+import SliderTextFixed from './sub/SliderTextFixed.vue'
+import SliderChangeMethod from './sub/SliderChangeMethod.vue'
 
 export default{
     components: {

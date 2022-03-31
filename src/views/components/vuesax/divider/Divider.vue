@@ -20,12 +20,12 @@
 </template>
 
 <script>
-import DividerDefault from './DividerDefault.vue'
-import DividerText from './DividerText.vue'
-import DividerTextPosition from './DividerTextPosition.vue'
-import DividerColor from './DividerColor.vue'
-import DividerIcon from './DividerIcon.vue'
-import DividerStyle from './DividerStyle.vue'
+import DividerDefault from './sub/DividerDefault.vue'
+import DividerText from './sub/DividerText.vue'
+import DividerTextPosition from './sub/DividerTextPosition.vue'
+import DividerColor from './sub/DividerColor.vue'
+import DividerIcon from './sub/DividerIcon.vue'
+import DividerStyle from './sub/DividerStyle.vue'
 
 export default{
     components: {

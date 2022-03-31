@@ -39,13 +39,13 @@
 </template>
 
 <script>
-import DatetimePickerBasic from './DatetimePickerBasic.vue'
-import DatetimePickerDatetime from './DatetimePickerDatetime.vue'
-import DatetimePickerTime from './DatetimePickerTime.vue'
-import DatetimePickerLocale from './DatetimePickerLocale.vue'
-import DatetimePickerStartEnd from './DatetimePickerStartEnd.vue'
-import DatetimePickerInline from './DatetimePickerInline.vue'
-import DatetimePickerInput from './DatetimePickerInput.vue'
+import DatetimePickerBasic from './sub/DatetimePickerBasic.vue'
+import DatetimePickerDatetime from './sub/DatetimePickerDatetime.vue'
+import DatetimePickerTime from './sub/DatetimePickerTime.vue'
+import DatetimePickerLocale from './sub/DatetimePickerLocale.vue'
+import DatetimePickerStartEnd from './sub/DatetimePickerStartEnd.vue'
+import DatetimePickerInline from './sub/DatetimePickerInline.vue'
+import DatetimePickerInput from './sub/DatetimePickerInput.vue'
 
 export default {
     components: {

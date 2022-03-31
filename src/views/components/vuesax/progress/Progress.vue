@@ -17,9 +17,9 @@
 </template>
 
 <script>
-import ProgressColor from './ProgressColor.vue'
-import ProgressInterminate from './ProgressInterminate.vue'
-import ProgressHeight from './ProgressHeight.vue'
+import ProgressColor from './sub/ProgressColor.vue'
+import ProgressInterminate from './sub/ProgressInterminate.vue'
+import ProgressHeight from './sub/ProgressHeight.vue'
 
 export default{
     components: {

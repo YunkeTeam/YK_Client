@@ -22,11 +22,11 @@
 </template>
 
 <script>
-import NotificationsDefault from './NotificationsDefault.vue'
-import NotificationsPosition from './NotificationsPosition.vue'
-import NotificationsIcon from './NotificationsIcon.vue'
-import NotificationsFixedAndFunctionClick from './NotificationsFixedAndFunctionClick.vue'
-import NotificationsTime from './NotificationsTime.vue'
+import NotificationsDefault from './sub/NotificationsDefault.vue'
+import NotificationsPosition from './sub/NotificationsPosition.vue'
+import NotificationsIcon from './sub/NotificationsIcon.vue'
+import NotificationsFixedAndFunctionClick from './sub/NotificationsFixedAndFunctionClick.vue'
+import NotificationsTime from './sub/NotificationsTime.vue'
 
 export default{
     components: {

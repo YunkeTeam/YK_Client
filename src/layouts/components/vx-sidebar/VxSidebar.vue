@@ -1,18 +1,13 @@
-<!-- =========================================================================================
-    File Name: VxSidebar.vue
-    Description: Sidebar Component
-    Component Name: VxSidebar
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
+<!-- 
+    首页侧边导航栏
+ -->
 
 
 <template>
     <div class="parentx">
         <vs-sidebar v-hammer:swipe.left="onSwipeLeft" ref="mainSidebar" :parent="parent" :hiddenBackground="clickNotClose" :reduce="reduce" default-index="-1" class="sidebarx main-menu-sidebar items-no-padding" v-model="isSidebarActive" :click-not-close="clickNotClose" :reduce-not-rebound="reduceNotRebound">
             <div @mouseenter="sidebarMouseEntered" @mouseleave="sidebarMouseLeave">
+                <!-- 系统图标和名称 -->
                 <div class="header-sidebar flex items-end justify-between" slot="header">
                     <div class="logo flex items-center">
                         <img :src="logo" alt="logo" class="w-10 mr-4" v-if="logo">
@@ -28,7 +23,7 @@
                         </template>
                     </div>
                 </div>
-
+                <!-- 折叠侧边栏的按钮 -->
                 <div class="shadow-bottom" v-show="showShadowBottom"></div>
 
                 <VuePerfectScrollbar ref="mainSidebarPs" class="scroll-area--main-sidebar pt-2" :settings="settings" @ps-scroll-y="psSectionScroll">
@@ -146,6 +141,7 @@ export default {
             if (val == true) {
                 this.$store.dispatch('updateSidebarWidth', 'reduced');
             } else {
+                
                 this.$store.dispatch('updateSidebarWidth', 'default');
             }
 
