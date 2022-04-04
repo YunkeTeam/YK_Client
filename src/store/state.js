@@ -20,6 +20,8 @@ const state = {
     sidebarItemsMin: false,
     theme: themeConfig.theme || 'light',
     navbarSearchAndPinList: navbarSearchAndPinList,
+    newsDetail: {title:'你丫的'},
+    blogDetail: {title: '博客标题'},
     AppActiveUser: {
         id: 0,
         name: 'John Doe',

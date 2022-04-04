@@ -66,6 +66,10 @@ import './filters/filters'
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard);
 
+// 引入element ui
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+Vue.use(ElementUI)
 
 // Tour
 import VueTour from 'vue-tour'
@@ -92,6 +96,10 @@ Vue.use(VueGoogleMaps, {
 import { VueHammer } from 'vue2-hammer'
 Vue.use(VueHammer)
 
+// markdown
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+Vue.use(mavonEditor)
 
 // PrismJS
 import 'prismjs'
@@ -108,6 +116,7 @@ require('./assets/css/iconfont.css')
 
 
 Vue.config.productionTip = false
+
 
 new Vue({
     router,

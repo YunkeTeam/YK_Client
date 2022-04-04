@@ -90,6 +90,12 @@ const mutations = {
             state.starredPages.splice(10, 0, lastItemInStarredLimited);
         }
     },
+    updateNewsDetail(state, newsDetail) {
+        this.state.newsDetail = newsDetail;
+    },
+    updateBlogDetail(state, blogDetail) {
+        this.state.blogDetail = blogDetail;
+    }
 }
 
 export default mutations
