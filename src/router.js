@@ -841,14 +841,13 @@ const router = new Router({
                 {
                     path: '/pages/profile',
                     name: 'pageProfile',
-                    component: () => import('@/views/pages/ResetPassword.vue'),
+                    component: () => import('@/views/pages/PersonalCenter.vue'),
                     meta: {
                         breadcrumb: [
                             { title: 'Home', url: '/' },
-                            { title: 'Pages' },
-                            { title: 'Profile', active: true },
+                            { title: '个人中心', active: true },
                         ],
-                        pageTitle: 'resetPassword',
+                        pageTitle: '个人中心',
                         rule: 'editor'
                     },
                 },
