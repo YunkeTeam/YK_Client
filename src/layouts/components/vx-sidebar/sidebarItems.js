@@ -19,7 +19,7 @@ export default [
     url: null,
     name: "Dashboard",
     slug: "dashboard",
-    tag: "2",
+    tag: "3",
     tagColor: "warning",
     icon: "HomeIcon",
     i18n: "Home",
@@ -35,6 +35,12 @@ export default [
         name: "eCommerce",
         slug: "dashboardECommerce",
         i18n: "Community",
+      },
+      {
+        url: '/home/myPost',
+        name: "eCommerce",
+        slug: "dashboardECommerce",
+        i18n: "MyPost",
       },
     ]
   },
@@ -163,7 +169,7 @@ export default [
   //   ]
   // },
   {
-    url: "/ui-elements/colors",
+    url: "/apps/news",
     name: "Colors",
     slug: "colors",
     icon: "FileTextIcon",
@@ -620,11 +626,24 @@ export default [
   //   i18n: "Select",
   // },
   {
-    url: '/extensions/quill-editor',
-    name: "Quill Editor",
-    icon: "EditIcon",
-    slug: "extraComponentQuillEditor",
-    i18n: "QuillEditor",
+    url: null,
+    name: 'Access Control',
+    icon: 'EditIcon',
+    i18n: 'BlogPanel',
+    submenu: [
+      {
+        url: '/apps/blog-editor',
+        name: "Quill Editor",
+        slug: "extraComponentQuillEditor",
+        i18n: "QuillEditor",
+      },
+      {
+        url: '/pages/BlogManagement',
+        name: "Quill Editor",
+        slug: "extraComponentQuillEditor",
+        i18n: "BlogManagement",
+      }
+    ]
   },
   // {
   //   url: '/extensions/drag-and-drop',

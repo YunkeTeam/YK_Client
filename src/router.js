@@ -52,6 +52,22 @@ const router = new Router({
                         rule: 'editor'
                     }
                 },
+                {
+                    path: '/apps/news/newsDetail',
+                    name: 'newsDetail',
+                    component: () => import('./views/pages/NewsDetail.vue'),
+                    meta: {
+                        rule: 'editor'
+                    }
+                },
+                {
+                    path: '/home/myPost',
+                    name: 'myPost',
+                    component: () => import('./views/pages/MyPost.vue'),
+                    meta: {
+                        rule: 'editor'
+                    }
+                },
                 // {
                 //     path: '/dashboard/ecommerce',
                 //     name: 'dashboardECommerce',
@@ -825,29 +841,46 @@ const router = new Router({
                 {
                     path: '/pages/profile',
                     name: 'pageProfile',
-                    component: () => import('@/views/pages/Profile.vue'),
+                    component: () => import('@/views/pages/ResetPassword.vue'),
                     meta: {
                         breadcrumb: [
                             { title: 'Home', url: '/' },
                             { title: 'Pages' },
                             { title: 'Profile', active: true },
                         ],
-                        pageTitle: 'Profile',
+                        pageTitle: 'resetPassword',
                         rule: 'editor'
                     },
                 },
                 {
-                    path: '/pages/faq',
+                    path: '/pages/BlogManagement',
                     name: 'pageFAQ',
-                    component: () => import('@/views/pages/Faq.vue'),
+                    component: () => import('@/views/pages/BlogManagement.vue'),
                     meta: {
                         breadcrumb: [
                             { title: 'Home', url: '/' },
-                            { title: 'Pages' },
-                            { title: 'FAQ', active: true },
+                            { title: '应用' },
+                            { title: '博客面板' },
+                            { title: '博客管理', active: true },
                         ],
-                        pageTitle: 'FAQ',
+                        pageTitle: '博客中心',
                         rule: 'editor'
+                    },
+                },
+                {
+                    path: '/pages/BlogManagement/blogDetail',
+                    name: 'pageKnowledgeBaseCategoryQuestion',
+                    component: () => import('@/views/pages/BlogDetail.vue'),
+                    meta: {
+                        breadcrumb: [
+                            { title: 'Home', url: '/' },
+                            { title: '应用' },
+                            { title: '博客面板' },
+                            { title: '博客管理', url: '/pages/BlogManagement' },
+                            { title: '博客详情', active: true },
+                        ],
+                        pageTitle: '博客详情',
+                        rule: 'editor',
                     },
                 },
                 {
@@ -881,7 +914,7 @@ const router = new Router({
                 {
                     path: '/pages/knowledge-base/category/question',
                     name: 'pageKnowledgeBaseCategoryQuestion',
-                    component: () => import('@/views/pages/KnowledgeBaseCategoryQuestion.vue'),
+                    component: () => import('@/views/pages/BlogDetail.vue'),
                     meta: {
                         breadcrumb: [
                             { title: 'Home', url: '/' },
@@ -894,16 +927,16 @@ const router = new Router({
                     },
                 },
                 {
-                    path: '/pages/search',
+                    path: '/apps/news',
                     name: 'pageSearch',
-                    component: () => import('@/views/pages/Search.vue'),
+                    component: () => import('@/views/pages/News.vue'),
                     meta: {
                         breadcrumb: [
                             { title: 'Home', url: '/' },
-                            { title: 'Pages' },
-                            { title: 'Search', active: true },
+                            { title: '应用' },
+                            { title: '新闻', active: true },
                         ],
-                        pageTitle: 'Search',
+                        pageTitle: '新闻',
                         rule: 'editor'
                     },
                 },
@@ -1012,6 +1045,20 @@ const router = new Router({
                             { title: 'Quill Editor', active: true },
                         ],
                         pageTitle: 'Quill Editor',
+                        rule: 'editor'
+                    },
+                },
+                {
+                    path: '/apps/blog-editor',
+                    name: 'blogEditor',
+                    component: () => import('@/views/pages/Markdown.vue'),
+                    meta: {
+                        breadcrumb: [
+                            { title: 'Home', url: '/' },
+                            { title: '应用' },
+                            { title: '编辑', active: true },
+                        ],
+                        pageTitle: '博客编辑',
                         rule: 'editor'
                     },
                 },

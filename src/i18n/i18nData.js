@@ -127,7 +127,10 @@ export default {
 		About: 'About',
 		InfoPlatform: 'Information Platform',
 		ReleaseInfo: 'Release Information',
-		InfoManage: 'Manage Information'
+		InfoManage: 'Manage Information',
+		BlogPanel: 'Blog Panel',
+		BlogManagement: 'Blog Management',
+		MyPost: 'My Post'
 	},
 	de: {
 		Dashboard: 'Instrumententafel',
@@ -256,7 +259,10 @@ export default {
 		About: 'About',
 		InfoPlatform: 'Information Platform',
 		ReleaseInfo: 'Release Information',
-		InfoManage: 'Manage Information'
+		InfoManage: 'Manage Information',
+		BlogPanel: 'Blog Panel',
+		BlogManagement: 'Blog Management',
+		MyPost: 'My Post'
 	},
 	fr: {
 		Dashboard: 'Tableau de bord',
@@ -385,7 +391,10 @@ export default {
 		About: 'About',
 		InfoPlatform: 'Information Platform',
 		ReleaseInfo: 'Release Information',
-		InfoManage: 'Manage Information'
+		InfoManage: 'Manage Information',
+		BlogPanel: 'Blog Panel',
+		BlogManagement: 'Blog Management',
+		MyPost: 'My Post'
 	},
 	pt: {
 		Dashboard: 'painel de controle',
@@ -514,7 +523,10 @@ export default {
 		About: 'About',
 		InfoPlatform: 'Information Platform',
 		ReleaseInfo: 'Release Information',
-		InfoManage: 'Manage Information'
+		InfoManage: 'Manage Information',
+		BlogPanel: 'Blog Panel',
+		BlogManagement: 'Blog Management',
+		MyPost: 'My Post'
 	},
 	zh: {
 		Dashboard: '仪表板',
@@ -643,6 +655,9 @@ export default {
 		About: '关于',
 		InfoPlatform: '信息平台',
 		ReleaseInfo: '发布信息',
-		ManageInfo: '管理信息'
+		ManageInfo: '管理信息',
+		BlogPanel: '博客面板',
+		BlogManagement: '博客管理',
+		MyPost: '我的帖子'
 	},
 }
