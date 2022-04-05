@@ -95,9 +95,6 @@
 import { videoPlayer } from 'vue-video-player'
 import 'video.js/dist/video-js.css'
 import newsDetail from './NewsDetail.vue'
-import MailItem from "../apps/email/MailItem";
-import EmailSidebar from "../apps/email/EmailSidebar";
-import EmailView from "../apps/email/EmailView";
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
 
 export default{

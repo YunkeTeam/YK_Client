@@ -36,10 +36,8 @@
 </template>
 
 <script>
-  import Button from "../components/vuesax/button/Button";
   export default {
     name: "Markdown",
-    components: {Button},
     data() {
       return {
         doc: "",

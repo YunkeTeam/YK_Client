@@ -1,6 +1,6 @@
 <!-- 首页轮播图 -->
 <template>
-  <el-carousel :interval="3000" arrow="always">
+  <el-carousel :interval="3000" arrow="always" height="25rem">
     <el-carousel-item id="el-carousel-item1"></el-carousel-item>
     <el-carousel-item id="el-carousel-item2"></el-carousel-item>
     <el-carousel-item id="el-carousel-item3"></el-carousel-item>
@@ -17,28 +17,28 @@ export default {
 </script>
 
 <style>
-  .el-carousel__item {
-    -moz-background-size:100% 100%;
-    background-size:100% 100%;
-  }
+  /*.el-carousel__item {*/
+  /*  !*-moz-background-size:100% 100%;*!*/
+  /*  !*background-size:100% 100%;*!*/
+  /*}*/
   #el-carousel-item1 {
-    background-image: url('../../assets/images/slider/01.jpg');
+    background-image: url('../../assets/images/slider/1.jpeg');
   }
 
   #el-carousel-item2 {
-    background-image: url('../../assets/images/slider/02.jpg');
+    background-image: url('../../assets/images/slider/2.jpeg');
   }
 
   #el-carousel-item3 {
-    background-image: url('../../assets/images/slider/03.jpg');
+    background-image: url('../../assets/images/slider/3.jpeg');
   }
 
   #el-carousel-item4 {
-    background-image: url('../../assets/images/slider/04.jpg');
+    background-image: url('../../assets/images/slider/4.jpeg');
   }
 
   #el-carousel-item5 {
-    background-image: url('../../assets/images/slider/05.jpg');
+    background-image: url('../../assets/images/slider/5.jpeg');
   }
 
 

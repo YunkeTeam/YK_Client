@@ -1,14 +1,6 @@
-<!-- =========================================================================================
-	File Name: TheNavbar.vue
-	Description: Navbar component
-	Component Name: TheNavbar
-	----------------------------------------------------------------------------------------
-	Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-	Author: Pixinvent
-	Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
-
+<!--
+  页面顶部的导航栏
+ -->
 <template>
 <div class="relative">
 	<div class="vx-navbar-wrapper">
@@ -61,132 +53,33 @@
 			<vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
 				<span class="cursor-pointer flex i18n-locale"><img class="h-4 w-5" :src="require(`@/assets/images/flags/${$i18n.locale}.png`)" :alt="$i18n.locale" /><span class="hidden sm:block ml-2">{{ getCurrentLocaleData.lang }}</span></span>
 				<vs-dropdown-menu class="w-48 i18n-dropdown vx-navbar-dropdown">
-					<vs-dropdown-item @click="updateLocale('en')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/en.png" alt="en" /> &nbsp;English</vs-dropdown-item>
-					<vs-dropdown-item @click="updateLocale('fr')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/fr.png" alt="fr" /> &nbsp;French</vs-dropdown-item>
-					<vs-dropdown-item @click="updateLocale('de')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/de.png" alt="de" /> &nbsp;German</vs-dropdown-item>
-					<vs-dropdown-item @click="updateLocale('pt')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/pt.png" alt="pt" /> &nbsp;Portuguese</vs-dropdown-item>
-					<vs-dropdown-item @click="updateLocale('zh')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/zh.png" alt="zh" /> &nbsp;Chinese</vs-dropdown-item>
+					<vs-dropdown-item @click="updateLocale('en')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/en.png" alt="en" /> &nbsp;英语</vs-dropdown-item>
+					<vs-dropdown-item @click="updateLocale('fr')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/fr.png" alt="fr" /> &nbsp;法语</vs-dropdown-item>
+					<vs-dropdown-item @click="updateLocale('de')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/de.png" alt="de" /> &nbsp;德语</vs-dropdown-item>
+					<vs-dropdown-item @click="updateLocale('pt')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/pt.png" alt="pt" /> &nbsp;葡萄牙语</vs-dropdown-item>
+					<vs-dropdown-item @click="updateLocale('zh')"><img class="h-4 w-5 mr-1" src="@/assets/images/flags/zh.png" alt="zh" /> &nbsp;中文</vs-dropdown-item>
 				</vs-dropdown-menu>
 			</vs-dropdown>
-
-            <!-- SEARCHBAR -->
-            <div class="search-full-container w-full h-full absolute left-0 rounded-lg" :class="{'flex': showFullSearch}" v-show="showFullSearch">
-                <vx-auto-suggest
-                  class="w-full"
-                  inputClassses="w-full vs-input-no-border vs-input-no-shdow-focus no-icon-border"
-                  :autoFocus="showFullSearch"
-                  :data="navbarSearchAndPinList"
-                  icon="SearchIcon"
-                  placeholder="Search..."
-                  ref="navbarSearch"
-                  @closeSearchbar="showFullSearch = false"
-                  @selected="selected"
-                  background-overlay />
-                <div class="absolute right-0 h-full z-50">
-                    <feather-icon icon="XIcon" class="px-4 cursor-pointer h-full close-search-icon" @click="showFullSearch = false"></feather-icon>
-                </div>
+      <span style="margin-right: 1.5rem">
+        <!-- SEARCHBAR -->
+        <div class="search-full-container w-full h-full absolute left-0 rounded-lg" :class="{'flex': showFullSearch}" v-show="showFullSearch">
+            <vx-auto-suggest
+                class="w-full"
+                inputClassses="w-full vs-input-no-border vs-input-no-shdow-focus no-icon-border"
+                :autoFocus="showFullSearch"
+                :data="navbarSearchAndPinList"
+                icon="SearchIcon"
+                placeholder="Search..."
+                ref="navbarSearch"
+                @closeSearchbar="showFullSearch = false"
+                @selected="selected"
+                background-overlay />
+            <div class="absolute right-0 h-full z-50">
+                <feather-icon icon="XIcon" class="px-4 cursor-pointer h-full close-search-icon" @click="showFullSearch = false"></feather-icon>
             </div>
-            <feather-icon icon="SearchIcon" @click="showFullSearch = true" class="cursor-pointer navbar-fuzzy-search ml-4"></feather-icon>
-
-            <!-- CART DROPDOWN -->
-            <vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
-                <feather-icon icon="ShoppingCartIcon" class="cursor-pointer ml-4 mr-6 mt-1" :badge="cartItems.length"></feather-icon>
-                <vs-dropdown-menu class="cart-dropdown vx-navbar-dropdown" :class="{'dropdown-custom': cartItems.length}">
-
-                    <!-- IF CART HAVE ITEMS: HEADER -->
-                    <template v-if="cartItems.length">
-                        <div class="notification-header text-center p-5 bg-primary text-white">
-                            <h3 class="text-white">{{ cartItems.length }} Item<span v-show="cartItems.length > 1">s</span></h3>
-                            <p class="opacity-75">In Your Cart</p>
-                        </div>
-
-                        <!-- CART ITEMS -->
-                        <VuePerfectScrollbar ref="mainSidebarPs" class="scroll-area--cart-items-dropdowm p-0 mb-10" :settings="settings">
-                        <ul class="bordered-items">
-                            <li v-for="item in cartItems" :key="item.objectID" class="vx-row no-gutter cart-item cursor-pointer">
-
-                                <!-- IMG COL -->
-                                <div class="vx-col w-1/5 item-img-container bg-white flex items-center justify-center">
-                                    <img :src="item.image" alt="item" class="cart-dropdown-item-img p-4">
-                                </div>
-
-                                <!-- INFO COL -->
-                                <div class="vx-col w-4/5 pr-4 pl-2 py-4 flex flex-col justify-center">
-                                    <span class="font-medium block cart-item-title truncate">{{ item.name }}</span>
-                                    <small class="truncate mb-2">{{ item.description }}</small>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm font-medium">{{ item.quantity }} <small>x</small> ${{ item.price }}</span>
-                                        <feather-icon icon="XIcon" svgClasses="h-4 w-4 cursor-pointer text-danger" class="hover:text-danger" @click.stop="removeItemFromCart(item)" />
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                        </VuePerfectScrollbar>
-                        <div
-                            class=" checkout-footer fixed bottom-0 rounded-b-lg text-primary font-semibold w-full p-2 text-center border border-b-0 border-l-0 border-r-0 border-solid d-theme-border-grey-light cursor-pointer"
-                            @click="$router.push('/apps/eCommerce/checkout')">
-
-                            <span class="flex items-center justify-center">
-                              <feather-icon icon="ShoppingCartIcon" svgClasses="h-4 w-4"></feather-icon>
-                              <span class="ml-2">Checkout</span>
-                            </span>
-
-                        </div>
-                    </template>
-
-                    <!-- IF CART IS EMPTY -->
-                    <template v-else>
-                        <p class="p-4">Your Cart Is Empty.</p>
-                    </template>
-                </vs-dropdown-menu>
-            </vs-dropdown>
-
-			<!-- NOTIFICATIONS -->
-			<vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
-				<feather-icon icon="BellIcon" class="cursor-pointer mt-1 sm:mr-6 mr-2" :badge="unreadNotifications.length"></feather-icon>
-				<vs-dropdown-menu class="notification-dropdown dropdown-custom vx-navbar-dropdown">
-
-					<div class="notification-top text-center p-5 bg-primary text-white">
-						<h3 class="text-white">{{ unreadNotifications.length }} New</h3>
-						<p class="opacity-75">App Notifications</p>
-					</div>
-
-					<VuePerfectScrollbar ref="mainSidebarPs" class="scroll-area--nofications-dropdown p-0 mb-10" :settings="settings">
-					<ul class="bordered-items">
-						<li v-for="ntf in unreadNotifications" :key="ntf.index" class="flex justify-between px-4 py-4 notification cursor-pointer">
-							<div class="flex items-start">
-								<feather-icon :icon="ntf.icon" :svgClasses="[`text-${ntf.category}`, 'stroke-current mr-1 h-6 w-6']"></feather-icon>
-								<div class="mx-2">
-									<span class="font-medium block notification-title" :class="[`text-${ntf.category}`]">{{ ntf.title }}</span>
-									<small>{{ ntf.msg }}</small>
-								</div>
-							</div>
-							<small class="mt-1 whitespace-no-wrap">{{ elapsedTime(ntf.time) }}</small>
-						</li>
-					</ul>
-					</VuePerfectScrollbar>
-                    <div class="
-                        checkout-footer
-                        fixed
-                        bottom-0
-                        rounded-b-lg
-                        text-primary
-                        w-full
-                        p-2
-                        font-semibold
-                        text-center
-                        border
-                        border-b-0
-                        border-l-0
-                        border-r-0
-                        border-solid
-                        d-theme-border-grey-light
-                        cursor-pointer">
-                        <span>View All Notifications</span>
-                    </div>
-				</vs-dropdown-menu>
-			</vs-dropdown>
-
+        </div>
+        <feather-icon icon="SearchIcon" @click="showFullSearch = true" class="cursor-pointer navbar-fuzzy-search ml-4"></feather-icon>
+      </span>
 			<!-- USER META -->
 			<div class="the-navbar__user-meta flex items-center">
 				<div class="text-right leading-tight hidden sm:block">
@@ -219,44 +112,15 @@
                 @click="$router.push('/pages/profile')">
 
                 <feather-icon icon="UserIcon" svgClasses="w-4 h-4" />
-                <span class="ml-2">Profile</span>
+                <span class="ml-2">个人中心</span>
               </li>
-							<li
-                class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                @click="$router.push('/apps/email')">
-
-                <feather-icon icon="MailIcon" svgClasses="w-4 h-4" />
-                <span class="ml-2">Inbox</span>
-              </li>
-							<li
-                class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                @click="$router.push('/apps/todo')">
-
-                <feather-icon icon="CheckSquareIcon" svgClasses="w-4 h-4" />
-                <span class="ml-2">Tasks</span>
-              </li>
-							<li
-                class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                @click="$router.push('/apps/chat')">
-
-                <feather-icon icon="MessageSquareIcon" svgClasses="w-4 h-4" />
-                <span class="ml-2">Chat</span>
-              </li>
-              <li
-                class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
-                @click="$router.push('/apps/eCommerce/wish-list')">
-
-                <feather-icon icon="HeartIcon" svgClasses="w-4 h-4" />
-                <span class="ml-2">Wish List</span>
-              </li>
-
 							<vs-divider class="m-1"></vs-divider>
 
 							<li
                 class="flex py-2 px-4 cursor-pointer hover:bg-primary hover:text-white"
                 @click="logout">
                 <feather-icon icon="LogOutIcon" svgClasses="w-4 h-4"/>
-                <span class="ml-2">Logout</span>
+                <span class="ml-2">退出登录</span>
               </li>
 						</ul>
 					</vs-dropdown-menu>
@@ -323,15 +187,18 @@ export default {
             else if (this.sidebarWidth == "reduced") return "navbar-reduced"
             else if (this.sidebarWidth) return "navbar-full"
         },
-
+      /**
+       * 用户选择语言时，显示对应的语言
+       * @returns {{flag: string, lang: string}}
+       */
         // I18N
         getCurrentLocaleData() {
             const locale = this.$i18n.locale;
-            if (locale == "en") return { flag: "us", lang: 'English' }
-            else if (locale == "pt") return { flag: "br", lang: 'Portuguese' }
-            else if (locale == "fr") return { flag: "fr", lang: 'French' }
-            else if (locale == "de") return { flag: "de", lang: 'German' }
-            else if (locale == "zh") return { flag: "zh", lang: 'Chinese'}
+            if (locale == "en") return { flag: "us", lang: '英语' }
+            else if (locale == "pt") return { flag: "br", lang: '葡萄牙语' }
+            else if (locale == "fr") return { flag: "fr", lang: '法语' }
+            else if (locale == "de") return { flag: "de", lang: '德语' }
+            else if (locale == "zh") return { flag: "zh", lang: '中文'}
         },
 
         // BOOKMARK & SEARCH

@@ -1,13 +1,6 @@
-<!-- =========================================================================================
-    File Name: TheCustomizer.vue
-    Description: Template Customizer
-    Component Name: TheCustomizer
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
+<!--
+  用户自定义主题组件
+-->
 <template>
     <div id="theme-customizer">
         <vs-button @click.stop="active=!active" color="primary" type="filled" class="customizer-btn" icon-pack="feather" icon="icon-settings"></vs-button>
@@ -15,8 +8,8 @@
             <div class="h-full">
                 <div class="customizer-header mt-6 flex items-center justify-between px-6">
                     <div>
-                        <h4>THEME CUSTOMIZER</h4>
-                        <small>Customize & Preview in Real Time</small>
+                        <h4>自定义主题</h4>
+                        <small>实时定制和预览</small>
                     </div>
                     <feather-icon icon="XIcon" @click.stop="active = false" class="cursor-pointer"></feather-icon>
                 </div>
@@ -26,7 +19,7 @@
                     <div class="px-6">
                         <!-- THEME COLORS -->
                         <div>
-                            <h5 class="mb-4">Theme Color</h5>
+                            <h5 class="mb-4">主题颜色</h5>
                             <ul class="clearfix">
                                 <li @click="updatePrimaryColor(color)" v-for="color in themeColors" class="w-10 cursor-pointer h-10 rounded-lg m-2 float-left" :style="{backgroundColor: color}" :class="{'shadow-outline': color == primaryColor}" :key="color"></li>
                                 <li @click="updatePrimaryColor(customPrimaryColor)" class="w-10 cursor-pointer h-10 rounded-lg m-2 float-left" :style="{backgroundColor: customPrimaryColor}" :class="{'shadow-outline': customPrimaryColor == primaryColor}"></li>
@@ -39,7 +32,7 @@
                         <!-- THEME -->
                         <div class="mt-4">
                             <!-- <vs-switch v-model="theme_dark" vs-icon-off="wb_sunny" vs-icon-on="brightness_2" color="dark" /> -->
-                            <h5 class="mb-2">Dark Mode</h5>
+                            <h5 class="mb-2">黑暗模式</h5>
                             <div>
                                 <vs-radio class="mr-4" v-model="theme" vs-value="light">Light</vs-radio>
                                 <vs-radio class="mr-4" v-model="theme" vs-value="dark">Dark</vs-radio>
@@ -50,7 +43,7 @@
 
                         <!-- COLLAPSE SIDEBAR -->
                         <div class="mt-4 flex justify-between">
-                            <h5>Collapse Sidebar</h5>
+                            <h5>折叠边栏</h5>
                             <vs-switch v-model="reduced_sidebar"/>
                         </div>
 
@@ -58,7 +51,7 @@
 
                         <!-- NAVBAR COLOR -->
                         <div class="mt-4">
-                            <h5>Navbar Color</h5>
+                            <h5>导航栏颜色</h5>
                             <ul class="clearfix">
 
                                 <!-- WHITE COLOR -->
@@ -92,7 +85,7 @@
 
                         <!-- NAVBAR TYPE -->
                         <div class="mt-4">
-                            <h5 class="mb-2">Navbar Type</h5>
+                            <h5 class="mb-2">导航栏类型</h5>
                             <div>
                                 <vs-radio class="mr-4" v-model="navbarTypeLocal" vs-value="navbar-hidden">Hidden</vs-radio>
                                 <vs-radio class="mr-4" v-model="navbarTypeLocal" vs-value="navbar-static">Static</vs-radio>
@@ -104,7 +97,7 @@
 
                         <!-- FOOTER TYPE -->
                         <div class="mt-4">
-                            <h5 class="mb-2">Footer Type</h5>
+                            <h5 class="mb-2">页脚类型</h5>
                             <div>
                                 <vs-radio class="mr-4" v-model="footerTypeLocal" vs-value="hidden">Hidden</vs-radio>
                                 <vs-radio class="mr-4" v-model="footerTypeLocal" vs-value="static">Static</vs-radio>
@@ -115,14 +108,14 @@
 
                         <!-- SHOW SCROLL TO TOP -->
                         <div class="mt-4 flex justify-between">
-                            <h5 class="mb-2">Hide Scroll To Top</h5>
+                            <h5 class="mb-2">隐藏滚动到顶部</h5>
                             <vs-switch v-model="hideScrollToTopLocal"/>
                         </div>
                         <vs-divider></vs-divider>
 
                         <!-- ROUTER ANIMATION -->
                         <div class="mt-4">
-                            <h5 class="mb-2">Router Animation {{ routerTransitionLocal }}</h5>
+                            <h5 class="mb-2">路由器动画 {{ routerTransitionLocal }}</h5>
                             <vs-select v-model="routerTransitionLocal">
                                 <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="(item,index) in routerTransitionsList" />
                             </vs-select>

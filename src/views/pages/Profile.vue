@@ -322,7 +322,7 @@ export default {
                     time: 'Mon Dec 12 2018 07:46:05 GMT+0000 (GMT)',
                     isLiked: true,
                     text: 'I love jujubes wafer pie ice cream tiramisu. Chocolate I love pastry pastry sesame snaps wafer. Pastry topping biscuit lollipop topping I love lemon drops sweet roll bonbon. Brownie donut icing.',
-                    media: [{ img: '2.jpg' }],
+                    media: [{ img: '2.jpeg' }],
                     likes: 145,
                     comments: 77,
                     usersLiked: [
