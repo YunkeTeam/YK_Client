@@ -11,7 +11,7 @@
               <div class="text-center">
                 <h4>{{ card.name }}</h4>
               </div>
-              <vs-avatar class="mx-auto my-6 block" size="80px" :src="require(`@/assets/images/portrait/small/${ card.userImg }`)" />
+              <vs-avatar color="primary" :text="$cookies.get('username')" src="" size="80px" class="mx-auto my-6 block"/>
               <div class="flex justify-between text-center">
                 <span>
                     <p class="text-xl font-semibold">{{ card.user_meta_1_title }}</p>
@@ -282,6 +282,7 @@ export default{
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 2MB!');
       }
+
       return isJPG && isLt2M;
     },
   },

@@ -333,31 +333,20 @@ router.afterEach(() => {
 })
 
 router.beforeEach((to, from, next) => {
-    firebase.auth().onAuthStateChanged(() => {
-
-        // get firebase current user
-        const firebaseCurrentUser = firebase.auth().currentUser;
-
-        if (
-            to.path === "/pages/login" ||
-            to.path === "/pages/forgot-password" ||
-            to.path === "/pages/error-404" ||
-            to.path === "/pages/error-500" ||
-            to.path === "/pages/register" ||
-            to.path === "/callback" ||
-            to.path === "/pages/comingsoon" ||
-            (auth.isAuthenticated() || firebaseCurrentUser)
-        ) {
-            return next();
-        }
-
-        router.push({ path: '/pages/login', query: { to: to.path } })
-        // Specify the current path as the customState parameter, meaning it
-        // will be returned to the application after auth
-        // auth.login({ target: to.path });
-
-    });
-
+    let token = Vue.$cookies.get("token");
+    if (
+        to.path === "/pages/login" ||
+        to.path === "/pages/forgot-password" ||
+        to.path === "/pages/error-404" ||
+        to.path === "/pages/error-500" ||
+        to.path === "/pages/register" ||
+        to.path === "/callback" ||
+        to.path === "/pages/comingsoon" ||
+        (token != null && token !== "undefined")
+    ) {
+        return next();
+    }
+    next('/pages/login')
 });
 
 export default router

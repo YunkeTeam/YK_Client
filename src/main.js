@@ -25,11 +25,6 @@ Vue.use(InstantSearch);
 import '@/firebase/firebaseConfig'
 
 
-// Auth0 Plugin
-import AuthPlugin from "./plugins/auth";
-Vue.use(AuthPlugin);
-
-
 // ACL
 import acl from './acl/acl'
 
@@ -95,6 +90,9 @@ Vue.use(VueGoogleMaps, {
 // Vuejs - Vue wrapper for hammerjs
 import { VueHammer } from 'vue2-hammer'
 Vue.use(VueHammer)
+
+import VueCookie from 'vue-cookies';
+Vue.use(VueCookie);
 
 // markdown
 import mavonEditor from 'mavon-editor'

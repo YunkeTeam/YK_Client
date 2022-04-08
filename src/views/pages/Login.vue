@@ -13,9 +13,10 @@
                                     <h4 class="mb-4">登录</h4>
                                     <p>欢迎使用云客在线服务系统, 请登录你的账户</p>
                                 </div>
+                                <!--用户名输入框-->
                                 <vs-input
                                   data-vv-validate-on="blur"
-                                  v-validate="'required|alpha_dash'"
+                                  v-validate="'required'"
                                   type="username"
                                   name="username"
                                   icon="icon icon-user"
@@ -24,10 +25,10 @@
                                   v-model="username"
                                   class="w-full no-icon-border" />
                                 <span class="text-danger text-sm" v-show="errors.has('username')">{{ errors.first('username') }}</span>
-
+                                <!--密码输入框-->
                                 <vs-input
                                     data-vv-validate-on="blur"
-                                    v-validate="'required|min:8|max:10'"
+                                    v-validate="'required|min:8|max:16'"
                                     type="password"
                                     name="password"
                                     icon="icon icon-lock"
@@ -36,7 +37,23 @@
                                     v-model="password"
                                     class="w-full mt-6 no-icon-border" />
                                 <span class="text-danger text-sm">{{ errors.first('password') }}</span>
-
+                                <div class="flex flex-wrap justify-between">
+                                  <!--验证码输入框-->
+                                  <vs-input
+                                      data-vv-validate-on="blur"
+                                      v-validate="'required'"
+                                      type="text"
+                                      name="verifyCode"
+                                      icon="icon icon-pocket"
+                                      icon-pack="feather"
+                                      label-placeholder="验证码"
+                                      v-model="verifyCode"
+                                      class="w-full mt-6 no-icon-border lg:w-3/5" />
+                                  <!--显示验证码图片-->
+                                  <div class="w-full mt-6 no-icon-border lg:w-2/5" style="padding-left: 1rem;">
+                                    <img style="cursor: pointer;width: 100%;height: 100%;" @click="refresh" :src="imgUrl"/>
+                                  </div>
+                                </div>
                                 <div class="flex flex-wrap justify-between my-5">
                                     <vs-checkbox v-model="checkbox_remember_me" class="mb-3">记住密码</vs-checkbox>
                                     <router-link to="/pages/forgot-password">忘记密码?</router-link>
@@ -53,31 +70,85 @@
 </template>
 
 <script>
-
+import {getCaptcha} from "../../network";
+import {doLogin} from "../../network";
 export default {
     data() {
         return {
-            username: 'demo@demo.com',
-            password: 'demodemo',
-            checkbox_remember_me: false
+            username: '',
+            password: '',
+            verifyCode: '', // 用户输入的验证码
+            imgUrl: '', // 验证码的url地址
+            checkbox_remember_me: false,
+            key: '' // redis中存储验证码的key
         }
     },
-    computed: {
-        validateForm() {
-            return !this.errors.any() && this.username != '' && this.password != '';
-        },
+    created() {
+      getCaptcha().then(res => {
+        // 获取响应头中的redis—key
+        if (res.headers['redis-key']) {
+          this.key = res.headers['redis-key'];
+        }
+        let blob = new Blob([res.data], {type: 'image/jpeg'})
+        this.imgUrl = window.URL.createObjectURL(blob)
+      }).catch(err => {
+        console.log(err)
+      })
     },
-    methods: {
-        login() {
-            const payload = {
-                checkbox_remember_me: this.checkbox_remember_me,
-                userDetails: {
-                    email: this.username,
-                    password: this.password
-                },
-                notify: this.$vs.notify
+    computed: {
+          validateForm() {
+              return !this.errors.any() && this.username !== '' && this.password !== '' && this.verifyCode !== '';
+          },
+      },
+    mounted() {
+      let username = this.$cookies.get("username");
+      if (username !== null && this.$cookies.get(username) != null) {
+        this.username = username;
+        this.password = this.$cookies.get(username);
+      }
+    },
+  methods: {
+        // 刷新验证码
+        refresh() {
+          getCaptcha().then(res => {
+            // 获取响应头中的redis—key
+            if (res.headers['redis-key']) {
+              this.key = res.headers['redis-key'];
             }
-            this.$store.dispatch('auth/loginAttempt', payload);
+            let blob = new Blob([res.data], {type: 'image/jpeg'})
+            this.imgUrl = window.URL.createObjectURL(blob)
+          }).catch(err => {
+            console.log(err)
+          })
+        },
+        login() {
+          // 实现记住密码功能
+          if (this.checkbox_remember_me === true) {
+            // 设置存储3天
+            this.$cookies.set(this.username, this.password, 3);
+          }
+          // 发送登录请求
+          doLogin({
+            verifyCode: this.verifyCode,
+            username: this.username,
+            password: this.password
+          }, this.key).then(res => {
+            if (res.data["code"] !== 200) {
+              this.$vs.notify({
+                title:'错误提示',
+                text:res.data["message"],
+                color:'danger',
+                position:'top-right'})
+            } else {
+              // 存储token
+              this.$cookies.set("token", res.data.data.token);
+              this.$cookies.set("username", res.data.data.username);
+              this.$cookies.set("userId", res.data.data.id);
+              this.$router.push('/');
+            }
+          }).catch(err => {
+            console.log(err)
+          })
         },
 
         loginAuth0() {
@@ -97,10 +168,6 @@ export default {
             });
         },
         registerUser() {
-            if(this.$store.state.auth.isUserLoggedIn()) {
-                this.notifyAlreadyLogedIn();
-                return false;
-            }
             this.$router.push('/pages/register');
         }
     }

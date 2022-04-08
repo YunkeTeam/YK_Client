@@ -83,7 +83,7 @@
 			<!-- USER META -->
 			<div class="the-navbar__user-meta flex items-center">
 				<div class="text-right leading-tight hidden sm:block">
-					<p class="font-semibold">{{ user_displayName }}</p>
+					<p class="font-semibold">{{ $cookies.get("username") }}</p>
 					<small>Available</small>
 				</div>
 				<vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
@@ -96,14 +96,7 @@
 							width="40"
 							height="40"
 							class="rounded-full shadow-md cursor-pointer block" />
-						<img
-							v-else
-							key="localImg"
-							:src="require(`@/assets/images/portrait/small/${activeUserImg}`)"
-							alt="user-img"
-							width="40"
-							height="40"
-							class="rounded-full shadow-md cursor-pointer block" />
+            <vs-avatar color="primary" :text="$cookies.get('username')" src="" size="40px"/>
 					</div>
 					<vs-dropdown-menu class="vx-navbar-dropdown">
 						<ul style="min-width: 9rem">
@@ -235,7 +228,7 @@ export default {
             return JSON.parse(localStorage.getItem('userInfo')).displayName
         },
         activeUserImg() {
-            return JSON.parse(localStorage.getItem('userInfo')).photoURL || this.$store.state.AppActiveUser.img;
+            return this.$store.state.AppActiveUser.img;
         }
     },
     methods: {
@@ -294,21 +287,10 @@ export default {
             return 'Just Now'
         },
         logout() {
-            // if user is logged in via auth0
-            if (this.$auth.profile) this.$auth.logOut();
-
-            // if user is looged in via firebase
-            const firebaseCurrentUser = firebase.auth().currentUser
-
-            if (firebaseCurrentUser) {
-                firebase.auth().signOut().then(() => {
-                    this.$router.push('/pages/login')
-                    localStorage.removeItem('userInfo');
-                })
-            }
-            // Change role on logout. Same value as initialRole of acj.js
-            this.$acl.change('admin')
-            localStorage.removeItem('userRole');
+            this.$cookies.remove("token");
+            this.$cookies.remove("username");
+            this.$cookies.remove("userId");
+            this.$router.push("/pages/login");
         },
         outside: function() {
             this.showBookmarkPagesDropdown = false
