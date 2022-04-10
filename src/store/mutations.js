@@ -95,6 +95,9 @@ const mutations = {
     },
     updateBlogDetail(state, blogDetail) {
         this.state.blogDetail = blogDetail;
+    },
+    updateAvatar(state, newAvatar) {
+        this.state.avatar = newAvatar;
     }
 }
 

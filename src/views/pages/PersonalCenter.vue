@@ -11,7 +11,7 @@
               <div class="text-center">
                 <h4>{{ card.name }}</h4>
               </div>
-              <vs-avatar color="primary" :text="$cookies.get('username')" src="" size="80px" class="mx-auto my-6 block"/>
+              <vs-avatar color="primary" :text="$cookies.get('username')" :src="imageUrl" size="80px" class="mx-auto my-6 block"/>
               <div class="flex justify-between text-center">
                 <span>
                     <p class="text-xl font-semibold">{{ card.user_meta_1_title }}</p>
@@ -33,7 +33,7 @@
                 <img :src="require(`@/assets/images/pages/${card_7.overlay_img}`)" alt="user-profile-cover" class="responsive">
                 <div class="card-overlay text-white flex flex-col justify-between">
                   <h4 class="text-white mb-4">{{ card_7.title }}</h4>
-                  <p>{{ card_7.text }}</p>
+                  <p>{{ describe }}</p>
                 </div>
               </template>
             </vx-card>
@@ -54,7 +54,7 @@
                           <div class="vx-col sm:w-2/3 w-full">
                             <el-upload
                                 class="avatar-uploader"
-                                action="https://jsonplaceholder.typicode.com/posts/"
+                                action="/api/file/upload"
                                 :show-file-list="false"
                                 :on-success="handleAvatarSuccess"
                                 :before-upload="beforeAvatarUpload">
@@ -68,7 +68,7 @@
                             <span>用户名</span>
                           </div>
                           <div class="vx-col sm:w-2/3 w-full">
-                            <vs-input class="w-full"  v-model="input5" />
+                            <vs-input class="w-full"  v-model="username" />
                           </div>
                         </div>
                         <div class="vx-row mb-6">
@@ -78,7 +78,7 @@
                           <div class="vx-col sm:w-2/3 w-full">
                             <div style="display: flex;justify-content: left">
                               <span style="margin-right: 1rem">
-                                <datepicker ref="programaticOpen" :language="languages[language]" format="yyyy年MM月dd日"></datepicker>
+                                <datepicker ref="programaticOpen" :language="languages[language]" :value="birthday" format="yyyy-MM-dd"></datepicker>
                               </span>
                               <vs-button class="mb-4" @click="$refs.programaticOpen.showCalendar()">编辑</vs-button>
                             </div>
@@ -91,10 +91,10 @@
                           <div class="vx-col sm:w-2/3 w-full">
                               <ul style="display: flex;">
                                 <li style="margin-right: 1.5rem">
-                                  <vs-radio v-model="radios1" vs-value="男">男</vs-radio>
+                                  <vs-radio v-model="gender" vs-value="男">男</vs-radio>
                                 </li>
                                 <li>
-                                  <vs-radio v-model="radios1" vs-value="女">女</vs-radio>
+                                  <vs-radio v-model="gender" vs-value="女">女</vs-radio>
                                 </li>
                               </ul>
                           </div>
@@ -104,7 +104,7 @@
                             <span>邮箱</span>
                           </div>
                           <div class="vx-col sm:w-2/3 w-full">
-                            <vs-input type="email" class="w-full" v-model="input6" />
+                            <vs-input type="email" class="w-full" v-model="email" />
                           </div>
                         </div>
                         <div class="vx-row mb-6">
@@ -112,7 +112,7 @@
                             <span>电话号码</span>
                           </div>
                           <div class="vx-col sm:w-2/3 w-full">
-                            <vs-input class="w-full" v-model="input7" />
+                            <vs-input class="w-full" v-model="phone" />
                           </div>
                         </div>
                         <div class="vx-row mb-6">
@@ -120,7 +120,7 @@
                             <span>职位</span>
                           </div>
                           <div class="vx-col sm:w-2/3 w-full">
-                            <vs-input type="text" class="w-full" v-model="input8" />
+                            <vs-input type="text" class="w-full" v-model="jobTitle" />
                           </div>
                         </div>
                         <div class="vx-row mb-6">
@@ -129,13 +129,13 @@
                           </div>
                           <div class="vx-col lg:w-1/2 w-full">
                             <div>
-                              <vs-textarea counter="20" label="最大字数: 20" :counter-danger.sync="counterDanger" v-model="textarea" />
+                              <vs-textarea counter="20" label="最大字数: 20" :counter-danger.sync="counterDanger" v-model="describe" />
                             </div>
                           </div>
                         </div>
                         <div class="vx-row">
                           <div class="vx-col sm:w-2/3 w-full ml-auto">
-                            <vs-button class="mr-3 mb-2">保存</vs-button>
+                            <vs-button class="mr-3 mb-2" @click="updateUser">保存</vs-button>
                           </div>
                         </div>
                       </vx-card>
@@ -156,12 +156,12 @@
                               </div>
 
                               <div class="vx-col lg:w-1/2 w-full">
-                                <vs-input v-validate="'required|email'" placeholder="Your Email" name="email" v-model="email" class="mt-5 w-full" />
+                                <vs-input v-validate="'required|email'" placeholder="Your Email" name="email" v-model="uEmail" class="mt-5 w-full" />
                                 <span class="text-danger text-sm" v-show="errors.has('email')">{{ errors.first('email') }}</span>
                               </div>
 
                               <div class="vx-col lg:w-1/2 w-full">
-                                <vs-input v-validate="'required|alpha_dash'" placeholder="Old Username" name="old_password" v-model="old_password" class="mt-5 w-full" />
+                                <vs-input type="password" v-validate="'required|min:8|max:15'" placeholder="Old Username" name="old_password" v-model="old_password" class="mt-5 w-full" />
                                 <span class="text-danger text-sm" v-show="errors.has('old_password')">{{ errors.first('old_password') }}</span>
                               </div>
 
@@ -198,6 +198,9 @@ import { videoPlayer } from 'vue-video-player'
 import 'video.js/dist/video-js.css'
 import Datepicker from 'vuejs-datepicker';
 import * as lang from 'vuejs-datepicker/src/locale';
+import {getAllUserInfo} from "../../network";
+import {doModifyUserInfo} from "../../network";
+import {doUpdatePassword} from "../../network";
 
 export default{
     data() {
@@ -217,21 +220,25 @@ export default{
             card_7: {
                 overlay_img: 'card-image-6.jpg',
                 title: '标语',
-                text: 'Cake sesame snaps cupcake gingerbread danish I love gingerbread. Apple pie pie jujubes chupa chups muffin halvah lollipop.',
+                // text: 'Cake sesame snaps cupcake gingerbread danish I love gingerbread. Apple pie pie jujubes chupa chups muffin halvah lollipop.',
             },
-
             name: '',
+            username: '',
             email: '',
+            uEmail:'',
             msg: '',
             password: "",
             confirm_password: "",
             old_password: "",
-            textarea: '',
+            describe: '',
             counterDanger: false,
             languages: lang,
             language: "zh",
-            radios1: '男',
+            gender: '男',
             imageUrl: 'https://i.imgur.com/ezM6SJ5.png',
+            phone: "1234334",
+            jobTitle: "后端工程师",
+            birthday: "2021-12-23",
 
             playerOptions: {
                 height: '460',
@@ -262,33 +269,117 @@ export default{
       submitForm() {
         this.$validator.validateAll().then(result => {
           if(result) {
-            // if form have no errors
-            alert("form submitted!");
+            doUpdatePassword({
+              username: this.name,
+              email: this.uEmail,
+              oldPassword: this.old_password,
+              newPassword: this.password
+            }).then(res => {
+              if (res.data.code === 200) {
+                this.name = "";
+                this.uEmail = "";
+                this.old_password = "";
+                this.password = "";
+                this.confirm_password = "";
+                this.$vs.notify({
+                  title:'密码修改成功',
+                  text:res.data["message"],
+                  color:'success',
+                  position:'top-right'})
+              }
+            }).catch(err => {
+              console.log(err)
+            })
           }else{
             // form have errors
           }
         })
-    },
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
-    },
-    beforeAvatarUpload(file) {
+      },
+      updateUser() {
+        doModifyUserInfo({
+          headImage: this.imageUrl,
+          username: this.username,
+          birthday: this.birthday,
+          gender: this.gender,
+          email: this.email,
+          phone: this.phone,
+          jobTitle: this.jobTitle,
+          description: this.describe
+        }).then(res => {
+          if (res.data.code === 200) {
+            this.$store.commit('updateAvatar', this.imageUrl);
+            this.$vs.notify({ title: '更新提示', text: '用户信息修改成功', color: 'success', position: 'top-center' })
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+      },
+      handleAvatarSuccess(res, file) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+      },
+      beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg';
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
+        this.$vs.notify({
+          title:'错误提示',
+          text:'上传头像图片只能是 JPG 格式!',
+          color:'danger',
+          position:'top-right'})
       }
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
+        this.$vs.notify({
+          title:'错误提示',
+          text:'上传头像图片大小不能超过 2MB!',
+          color:'danger',
+          position:'top-right'})
       }
 
       return isJPG && isLt2M;
     },
+      openAlert() {
+        this.$vs.dialog({
+          color: 'warning',
+          title: `警告`,
+          text: '登录状态已过期，请重新登录。',
+          accept: this.acceptAlert
+        })
+      },
+      acceptAlert() {
+        localStorage.clear();
+        this.$router.push("/pages/login");
+        this.$vs.notify({
+          color: 'primary',
+          title: '接收',
+          text: '跳转到登录界面'
+        })
+      }
   },
   mounted() {
     this.wasSidebarOpen = this.$store.state.reduceButton;
-    this.$store.commit('TOGGLE_REDUCE_BUTTON', true)
+    this.$store.commit('TOGGLE_REDUCE_BUTTON', true);
+  },
+  created() {
+      // 请求用户数据
+      getAllUserInfo().then(res => {
+        this.username = res.data.data.username;
+        this.email = res.data.data.email;
+        this.phone = res.data.data.phone;
+        this.jobTitle = res.data.data.jobTitle;
+        this.describe = res.data.data.description;
+        this.gender = res.data.data.gender;
+        this.imageUrl = res.data.data.headImage;
+        this.birthday = res.data.data.birthday.substr(0, 10);
+        this.$store.commit('updateAvatar', this.imageUrl);
+      }).catch(err => {
+        // if (err.data.code && err.data.code === 411) {
+        //   this.openAlert();
+        // } else {
+        //   console.log(err);
+        // }
+        console.log(err)
+      })
   },
   beforeDestroy() {
     if (!this.wasSidebarOpen) this.$store.commit('TOGGLE_REDUCE_BUTTON', false)

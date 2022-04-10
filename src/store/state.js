@@ -22,6 +22,7 @@ const state = {
     navbarSearchAndPinList: navbarSearchAndPinList,
     newsDetail: {title:'你丫的'},
     blogDetail: {title: '博客标题'},
+    avatar: '',
     AppActiveUser: {
         id: 0,
         name: 'John Doe',

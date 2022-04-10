@@ -333,7 +333,7 @@ router.afterEach(() => {
 })
 
 router.beforeEach((to, from, next) => {
-    let token = Vue.$cookies.get("token");
+    let token = localStorage.getItem("token");
     if (
         to.path === "/pages/login" ||
         to.path === "/pages/forgot-password" ||
@@ -342,6 +342,7 @@ router.beforeEach((to, from, next) => {
         to.path === "/pages/register" ||
         to.path === "/callback" ||
         to.path === "/pages/comingsoon" ||
+        to.path === "/pages/reset-password" ||
         (token != null && token !== "undefined")
     ) {
         return next();

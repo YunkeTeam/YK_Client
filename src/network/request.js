@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from "vue";
 
 // 全局默认配置
 let baseURL
@@ -23,17 +24,46 @@ export default function request(config) {
    })
   // 2.axios的拦截器
   instance.interceptors.request.use(config => {
+    if (config.url !== "/user/verifyCode") {
+      Vue.prototype.$vs.loading({
+        type: 'corners'
+      })
+    }
+    let token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = token;
+    }
     return config
   }, error => {
     return Promise.reject(error)
   });
   instance.interceptors.response.use((res) => {
+    Vue.prototype.$vs.loading.close();
     // 请求响应后拦截
     if (res.status === 200) {
       return Promise.resolve(res)
+    } else if (res.data.code === 411) {
+      function acceptAlert() {
+        localStorage.clear();
+        this.$vs.notify({
+          color: 'primary',
+          title: '接收',
+          text: '跳转到登录界面'
+        })
+      }
+      Vue.prototype.$vs.dialog({
+        color: 'warning',
+        title: `警告`,
+        text: '登录状态已过期，请重新登录。',
+        accept: acceptAlert
+      })
+      this.$router.push("/pages/login");
+      // return Promise.reject(res)
+    } else {
+      return res;
     }
-    return res;
   }, (error) => {
+    Vue.prototype.$vs.loading.close();
     return Promise.reject(error)
   })
   // 3.发送真正的网络请求

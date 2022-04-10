@@ -83,7 +83,7 @@
 			<!-- USER META -->
 			<div class="the-navbar__user-meta flex items-center">
 				<div class="text-right leading-tight hidden sm:block">
-					<p class="font-semibold">{{ $cookies.get("username") }}</p>
+					<p class="font-semibold">Titos</p>
 					<small>Available</small>
 				</div>
 				<vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
@@ -96,7 +96,7 @@
 							width="40"
 							height="40"
 							class="rounded-full shadow-md cursor-pointer block" />
-            <vs-avatar color="primary" :text="$cookies.get('username')" src="" size="40px"/>
+            <vs-avatar color="primary" text="Titos" :src="$store.state.avatar" size="40px"/>
 					</div>
 					<vs-dropdown-menu class="vx-navbar-dropdown">
 						<ul style="min-width: 9rem">
@@ -225,7 +225,7 @@ export default {
 
         // PROFILE
         user_displayName() {
-            return JSON.parse(localStorage.getItem('userInfo')).displayName
+            // return JSON.parse(localStorage.getItem('userInfo')).displayName
         },
         activeUserImg() {
             return this.$store.state.AppActiveUser.img;
@@ -287,10 +287,8 @@ export default {
             return 'Just Now'
         },
         logout() {
-            this.$cookies.remove("token");
-            this.$cookies.remove("username");
-            this.$cookies.remove("userId");
-            this.$router.push("/pages/login");
+          localStorage.clear();
+          this.$router.push("/pages/login");
         },
         outside: function() {
             this.showBookmarkPagesDropdown = false

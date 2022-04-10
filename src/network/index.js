@@ -33,11 +33,45 @@ export function doRegister(datas, redisKey) {
   })
 }
 
-// 更改头像请求
-export function doModifyAvatar(data) {
-  // return request({
-  //   url:
-  // })
+// 获取用户所有信息
+export function getAllUserInfo() {
+  return request({
+    url: "/user/getUserInfo",
+    method: "post",
+  })
 }
 
+// 更新用户信息
+export function doModifyUserInfo(datas) {
+  return request({
+    url: "/user/modifyInfo",
+    method: "post",
+    data: datas
+  })
+}
 
+// 用户更新密码
+export function doUpdatePassword(datas) {
+  return request({
+    url: "/user/fix/password",
+    method: "post",
+    data: datas
+  })
+}
+
+// 发送忘记密码请求
+export function doForgetPassword(datas) {
+  return request({
+    url: "/user/resetPassword",
+    method: "post",
+    data: datas
+  })
+}
+// 重置密码
+export function doResetPassword(datas) {
+  return request({
+    url: "/user/verifyResetPassword",
+    method: "post",
+    data: datas
+  })
+}
