@@ -75,3 +75,65 @@ export function doResetPassword(datas) {
     data: datas
   })
 }
+
+// 分页查询帖子信息
+export function getPostByPage(datas) {
+  return request({
+    url: "/post/list",
+    method: 'get',
+    params: datas
+  })
+}
+
+// 点赞帖子请求
+export function doLikePost(datas) {
+  return request({
+    url: '/post/like',
+    method: 'post',
+    data: datas
+  })
+}
+
+// 查询活跃达人
+export function getActivePerson(datas) {
+  return request({
+    url: '/post/talent',
+    method: 'get',
+    params: datas
+  })
+}
+
+// 发表评论
+export function doReleaseComment(datas) {
+  return request({
+    url: "/comment/add",
+    method: 'post',
+    data: datas
+  })
+}
+
+// 获取全部个人的帖子
+export function getPersonalPostByNum() {
+  return request({
+    url: "/post/listme",
+    method: 'get',
+  })
+}
+
+// 批量删除用户帖子信息
+export function doDeleteMultiPosts(datas) {
+  return request({
+    url: "/post/delete",
+    method: "post",
+    data: datas
+  })
+}
+
+// 发布帖子
+export function doReleasePost(datas) {
+  return request({
+    url: '/post/add',
+    method: 'post',
+    data: datas
+  })
+}

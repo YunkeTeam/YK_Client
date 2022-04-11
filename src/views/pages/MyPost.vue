@@ -20,7 +20,7 @@
             <vs-dropdown-menu>
 
               <vs-dropdown-item>
-                <span>删除</span>
+                <span @click="deletePosts">删除</span>
               </vs-dropdown-item>
 
             </vs-dropdown-menu>
@@ -30,7 +30,7 @@
         <!-- ITEMS PER PAGE -->
         <vs-dropdown vs-trigger-click class="cursor-pointer mb-4 mr-4">
           <div class="p-4 border border-solid d-theme-border-grey-light rounded-full d-theme-dark-bg cursor-pointer flex items-center justify-between font-medium">
-            <span class="mr-2">1 - 4 of 20</span>
+            <span class="mr-2">{{ currentPage * itemsPerPage - (itemsPerPage - 1) }} - {{ posts.length - currentPage * itemsPerPage > 0 ? currentPage * itemsPerPage : posts.length }} of {{ posts.length }}</span>
             <feather-icon icon="ChevronDownIcon" svgClasses="h-4 w-4" />
           </div>
           <!-- <vs-button class="btn-drop" type="line" color="primary" icon-pack="feather" icon="icon-chevron-down"></vs-button> -->
@@ -62,17 +62,17 @@
 
       <template slot-scope="{data}">
         <tbody>
-          <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
+          <vs-tr :data="tr" :key="tr.id" v-for="tr in data">
             <vs-td class="img-container">
-              <img :src="tr.img" class="product-img" />
+              <img :src="tr.postCover" class="product-img" />
             </vs-td>
 
             <vs-td>
-              <p class="product-name font-medium">{{ tr.name }}</p>
+              <p class="product-name font-medium">{{ tr.title }}</p>
             </vs-td>
 
             <vs-td>
-              <p class="product-category">{{ tr.describe  | truncate(20) | tailing('...') }}</p>
+              <p class="product-category">{{ tr.content  | truncate(20) | tailing('...') }}</p>
             </vs-td>
 
             <vs-td>
@@ -80,7 +80,7 @@
             </vs-td>
 
             <vs-td>
-              <vs-chip color="primary" class="product-order-status">{{ tr.releaseTime }}</vs-chip>
+              <vs-chip color="primary" class="product-order-status">{{ tr.createTime.replace("T", " ") }}</vs-chip>
             </vs-td>
 
           </vs-tr>
@@ -91,53 +91,35 @@
 </template>
 
 <script>
-
+import {getPersonalPostByNum} from "../../network";
+import {doDeleteMultiPosts} from "../../network"
 export default {
   data() {
     return {
       selected: [],
-      itemsPerPage: 4,
+      itemsPerPage: 2,
       isMounted: false,
       posts: [
-        {
-          img: 'search-result.jpg',
-          name: '张三',
-          describe: '这是张三的帖子,请多多关照',
-          likes: 20,
-          releaseTime: '2022-04-01'
-        },
-        {
-          img: 'search-result.jpg',
-          name: '张三',
-          describe: '这是张三的帖子,请多多关照',
-          likes: 20,
-          releaseTime: '2022-04-01'
-        },
-        {
-          img: 'search-result.jpg',
-          name: '张三',
-          describe: '这是张三的帖子,请多多关照',
-          likes: 20,
-          releaseTime: '2022-04-01'
-        }
+        // {
+        //   id: 1,
+        //   postCover: 'https://static.kurihada.com/yunke/profile0.jpg',
+        //   title: '我是标题',
+        //   content: '这是张三的帖子,请多多关照',
+        //   likes: 20,
+        //   createTime: '2022-04-03 21:58:01'
+        // },
       ]
     }
   },
   computed: {
     currentPage() {
       if(this.isMounted) {
-        // return this.$refs.table.currentx
+        return this.$refs.table.currentx
       }
       return 0
     },
   },
   methods: {
-    getOrderStatusColor(status) {
-      if(status == 'on hold') return "warning"
-      if(status == 'delivered') return "success"
-      if(status == 'canceled') return "danger"
-      return "primary"
-    },
     getPopularityColor(num) {
       if(num > 90) return "success"
       if(num >70) return "primary"
@@ -156,10 +138,63 @@ export default {
         return obj
       });
       return formattedData
+    },
+    openConfirm() {
+      this.$vs.dialog({
+        type: 'confirm',
+        color: 'danger',
+        title: `确认`,
+        text: '您确定要删除帖子数据吗？',
+        accept: this.acceptAlert
+      })
+    },
+    acceptAlert() {
+      let idList = [];
+      for (let i = 0; i < this.selected.length; i++) {
+        idList.push(this.selected[i].id)
+      }
+      doDeleteMultiPosts({
+        idList: idList
+      }).then(res => {
+        if (res.data.code === 200) {
+          this.selected = []
+          getPersonalPostByNum().then(res => {
+            if (res.data.code === 200) {
+              this.posts = []
+              for (let i = 0; i < res.data.data.length; i++) {
+                this.posts.push(res.data.data[i]);
+              }
+              this.$vs.notify({
+                color: 'danger',
+                title: '删除通知',
+                text: '该条数据已成功删除'
+              })
+            }
+          }).catch(err => {
+          })
+        }
+      }).catch(err => {
+        console.log("err1 = ", err)
+      })
+    },
+    // 删除帖子
+    deletePosts() {
+      this.openConfirm();
     }
   },
   mounted() {
     this.isMounted = true;
+  },
+  created() {
+    // 获取个人帖子信息
+    getPersonalPostByNum().then(res => {
+      if (res.data.code === 200) {
+        for (let i = 0; i < res.data.data.length; i++) {
+          this.posts.push(res.data.data[i]);
+        }
+      }
+    }).catch(err => {
+    })
   }
 }
 </script>

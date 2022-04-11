@@ -19,12 +19,14 @@ export default function request(config) {
    // 1.创建axios的实例
    const instance = axios.create({
      baseURL: baseURL, // 后台服务地址
-     timeout: 5000,
+     timeout: 10000,
      responseType: "json",
    })
   // 2.axios的拦截器
   instance.interceptors.request.use(config => {
-    if (config.url !== "/user/verifyCode") {
+    // if (config.url !== "/user/verifyCode" &&
+    if (
+        config.url !== "/post/like") {
       Vue.prototype.$vs.loading({
         type: 'corners'
       })

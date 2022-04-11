@@ -1,13 +1,6 @@
-<!-- =========================================================================================
-    File Name: Chat.vue
-    Description: Chat Application - Stay connected
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
-
+<!--
+  聊天板块
+-->
 <template>
     <div id="chat-app" class="border border-solid d-theme-border-grey-light rounded relative overflow-hidden">
         <vs-sidebar class="items-no-padding" parent="#chat-app" :click-not-close="clickNotClose" :hidden-background="clickNotClose" v-model="isChatSidebarActive" id="chat-list-sidebar">
@@ -17,29 +10,30 @@
 
             <div class="chat__profile-search flex p-4">
                 <div class="relative inline-flex">
-                    <vs-avatar class="m-0 border-2 border-solid border-white" :src="require(`@/assets/images/portrait/small/${activeUserImg}`)" size="40px" @click="showProfileSidebar(activeUserId)" />
+                    <vs-avatar class="m-0 border-2 border-solid border-white" color="primary" text="Titos" :src="$store.state.avatar" size="40px" @click="showProfileSidebar(activeUserId)" />
                     <div class="h-3 w-3 border-white border border-solid rounded-full absolute right-0 bottom-0" :class="'bg-' + getStatusColor(true)"></div>
                 </div>
-                <vs-input icon="icon-search" icon-pack="feather" class="w-full mx-5 input-rounded-full no-icon-border" placeholder="Search or start a new chat" v-model="searchQuery"/>
+                <!--好友搜索-->
+                <vs-input icon="icon-search" icon-pack="feather" class="w-full mx-5 input-rounded-full no-icon-border" placeholder="搜索好友" v-model="searchQuery"/>
             </div>
 
             <vs-divider class="d-theme-border-grey-light m-0" />
             <VuePerfectScrollbar class="chat-scroll-area pt-4" :settings="settings">
 
-                <!-- ACTIVE CHATS LIST -->
+                <!-- 正在聊天列表 -->
                 <div class="chat__chats-list mb-8">
-                    <h3 class="text-primary mb-5 px-4">Chats</h3>
+                    <h3 class="text-primary mb-5 px-4">正在聊天</h3>
                     <ul class="chat__active-chats bordered-items">
-                        <li class="cursor-pointer" v-for="(contact, index) in sorted" :key="index" @click="updateActiveChatUser(contact.id)">
+                        <li class="cursor-pointer" v-for="contact in sorted" :key="contact.id" @click="updateActiveChatUser(contact.id)">
                             <chat-contact :contact="contact" :lastMessaged="chatLastMessaged(contact.id).time" :unseenMsg="chatUnseenMessages(contact.id)" :isActiveChatUser="isActiveChatUser(contact.id)"></chat-contact>
                         </li>
                     </ul>
                 </div>
 
 
-                <!-- CONTACTS LIST -->
+                <!-- 好友列表 -->
                 <div class="chat__contacts">
-                    <h3 class="text-primary mb-5 px-4">Contacts</h3>
+                    <h3 class="text-primary mb-5 px-4">好友列表</h3>
                     <ul class="chat__contacts bordered-items">
                         <li class="cursor-pointer" v-for="contact in chatContacts" :key="contact.id" @click="updateActiveChatUser(contact.id)">
                             <chat-contact :contact="contact"></chat-contact>
@@ -53,7 +47,8 @@
         <div class="chat__bg app-fixed-height chat-content-area border border-solid d-theme-border-grey-light border-t-0 border-r-0 border-b-0" :class="{'sidebar-spacer--wide': clickNotClose, 'flex items-center justify-center': activeChatUser === null}">
             <template v-if="activeChatUser">
                 <div class="chat__navbar">
-                    <chat-navbar :isSidebarCollapsed="!clickNotClose" :user-id="activeChatUser" :isPinnedProp="isChatPinned" @openContactsSidebar="toggleChatSidebar(true)" @showProfileSidebar="updateUserProfileId" @toggleIsChatPinned="toggleIsChatPinned"></chat-navbar>
+<!--                    <chat-navbar :isSidebarCollapsed="!clickNotClose" :user-id="activeChatUser" :isPinnedProp="isChatPinned" @openContactsSidebar="toggleChatSidebar(true)" @showProfileSidebar="updateUserProfileId" @toggleIsChatPinned="toggleIsChatPinned"></chat-navbar>-->
+                    <chat-navbar :isSidebarCollapsed="!clickNotClose" :user-id="activeChatUser" :isPinnedProp="isChatPinned" @openContactsSidebar="toggleChatSidebar(true)"  @toggleIsChatPinned="toggleIsChatPinned"></chat-navbar>
                 </div>
                 <VuePerfectScrollbar class="chat-content-scroll-area border border-solid d-theme-border-grey-light" :settings="settings" ref="chatLogPS">
                     <div class="chat__log" ref="chatLog">
@@ -61,8 +56,8 @@
                     </div>
                 </VuePerfectScrollbar>
                 <div class="chat__input flex p-4 bg-white">
-                    <vs-input class="flex-1" placeholder="Type Your Message" v-model="typedMessage" @keyup.enter="sendMsg" />
-                    <vs-button class="bg-primary-gradient ml-4" type="filled" @click="sendMsg">Send</vs-button>
+                    <vs-input class="flex-1" placeholder="输入消息" v-model="typedMessage" @keyup.enter="sendMsg" />
+                    <vs-button class="bg-primary-gradient ml-4" type="filled" @click="sendMsg">发送</vs-button>
                 </div>
             </template>
             <template v-else>
@@ -87,12 +82,14 @@ export default{
     name: 'vx-sidebar',
     data() {
         return {
+            wsUrl: 'ws://127.0.0.1:8080/conversation/chat',
+            websocket: null,
             active: true,
             isHidden: false,
             contacts: contacts,
             searchContact: "",
             activeProfileSidebar: false,
-            activeChatUser: null,
+            activeChatUser: null, // 点击通信的好友
             userProfileId: -1,
             typedMessage: "",
             isChatPinned: false,
@@ -179,14 +176,14 @@ export default{
         },
         updateActiveChatUser(contactId) {
             this.activeChatUser = contactId;
-            if(this.$store.getters['chat/chatDataOfUser'](this.activeChatUser)) {
-                this.$store.dispatch('chat/markSeenAllMessages', contactId)
-            }
-            let chatData = this.$store.getters['chat/chatDataOfUser'](this.activeChatUser);
-            if(chatData) this.isChatPinned = chatData.isPinned;
-            else this.isChatPinned = false
-            this.toggleChatSidebar();
-            this.typedMessage = '';
+            // if(this.$store.getters['chat/chatDataOfUser'](this.activeChatUser)) {
+            //     this.$store.dispatch('chat/markSeenAllMessages', contactId)
+            // }
+            // let chatData = this.$store.getters['chat/chatDataOfUser'](this.activeChatUser);
+            // if(chatData) this.isChatPinned = chatData.isPinned;
+            // else this.isChatPinned = false
+            // this.toggleChatSidebar();
+            // this.typedMessage = '';
         },
         showProfileSidebar(userId) {
             this.userProfileId = userId;
@@ -225,7 +222,47 @@ export default{
         toggleChatSidebar(value = false) {
             if(!value && this.clickNotClose) return
             this.isChatSidebarActive = value;
+        },
+        // 初始化websocket
+        initWebSocket() {
+          if (typeof WebSocket === 'undefined') {
+            return console.log("你的浏览器不支持websocket")
+          }
+          this.websocket = new WebSocket(this.wsUrl + "/" + localStorage.getItem("userId"),[localStorage.getItem("token")]);
+          this.websocket.onmessage = this.websocketOnMessage;
+          this.websocket.onopen = this.websocketOnOpen;
+          this.websocket.onerror = this.websocketOnError;
+          this.websocket.onclose = this.websocketOnClose;
+        },
+      websocketOnMessage(e) {
+        // 接收服务器返回的信息
+        let data = JSON.parse(e.data);
+        if (data.isSystem) {
+          // 系统消息
+          console.log("接收到系统消息", data.message)
+        } else {
+
         }
+      },
+      websocketOnOpen() {
+        console.log("连接成功")
+        this.websocketOnSend({name: '张三'})
+      },
+      websocketOnError() {
+        // 连接建立失败
+        setTimeout(() => {
+          this.initWebSocket()
+        }, 2000)
+      },
+      websocketOnClose(e) {
+        // console.log('断开连接', e)
+        // // 关闭
+        // // 离开路由之后断开websocket连接
+        // this.websocket.onclose();
+      },
+      websocketOnSend(data) {
+          this.websocket.send(JSON.stringify(data))
+      }
     },
     components: {
         VuePerfectScrollbar,
@@ -240,7 +277,12 @@ export default{
         })
         this.setSidebarWidth();
     },
+    mounted() {
+      this.initWebSocket()
+    },
     beforeDestroy: function () {
+        // 离开路由之后断开websocket连接
+        this.websocket.onclose();
         window.removeEventListener('resize', this.handleWindowResize)
     },
 }
