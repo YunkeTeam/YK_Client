@@ -1,18 +1,11 @@
-<!-- =========================================================================================
-    File Name: TodoEdit.vue
-    Description: Edit todo component
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
-
+<!--
+  修改任务的表单
+-->
 <template>
     <vs-prompt
-        vs-title="Edit Task"
-        vs-accept-text= "Submit"
-        vs-cancel-text = "Remove"
+        vs-title="编辑任务"
+        vs-accept-text= "提交"
+        vs-cancel-text = "移除"
         vs-button-cancel = "border"
         @vs-cancel="removeTodo"
         @vs-accept="submitTodo"
@@ -46,8 +39,8 @@
 
                 <div class="vx-row">
                     <div class="vx-col w-full">
-                        <vs-input v-validate="'required'" name="title" class="w-full mb-4 mt-5" placeholder="Title" v-model="titleLocal" />
-                        <vs-textarea rows="5" label="Add description" v-model="descLocal" />
+                        <vs-input v-validate="'required'" name="title" class="w-full mb-4 mt-5" placeholder="标题" v-model="titleLocal" />
+                        <vs-textarea rows="5" label="修改描述" v-model="descLocal" />
                     </div>
                 </div>
 
@@ -76,6 +69,12 @@ export default {
             isImportantLocal: this.$store.state.todo.todoArray[this.todoItemId].isImportant,
             isStarredLocal: this.$store.state.todo.todoArray[this.todoItemId].isStarred,
             tagsLocal: this.$store.state.todo.todoArray[this.todoItemId].tags,
+            todoTags: [
+              { text: '学习' ,value : '学习', color: 'primary' },
+              { text: '生活', value: '生活', color: 'warning'},
+              { text: '工作', value: '工作', color: 'success'},
+              { text: '其它', value: '其它', color: 'danger' },
+            ],
         }
     },
     computed: {
@@ -86,9 +85,6 @@ export default {
             set(value) {
                 this.$emit('hideDisplayPrompt', value);
             }
-        },
-        todoTags() {
-            return this.$store.state.todo.todoTags;
         },
         validateForm() {
             return !this.errors.any() && this.titleLocal != '';

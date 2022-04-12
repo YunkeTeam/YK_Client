@@ -137,3 +137,20 @@ export function doReleasePost(datas) {
     data: datas
   })
 }
+
+// 获取好友列表
+export function getAllContactPerson() {
+  return request({
+    url: '/conversation/getSimpleInformation',
+    method: 'post',
+  })
+}
+
+// 请求与对应好友的所有聊天信息
+export function getAllChatMessage(datas) {
+  return request({
+    url: '/conversation/getAllMessage',
+    method: 'post',
+    params: datas
+  })
+}

@@ -11,9 +11,10 @@ export default {
 
   // Common Labels for both calendars
   calendarLabels: [
-      { text: 'Business' ,value : 'business', color: 'success' },
-      { text: 'Work', value: 'work', color: 'warning'},
-      { text: 'Personal', value: 'personal', color: 'danger'},
+      { text: '学习' ,value : '学习', color: 'success' },
+      { text: '生活', value: '生活', color: 'warning'},
+      { text: '工作', value: '工作', color: 'danger'},
+      { text: '其它', value: '其它', color: 'danger'},
   ],
 
   calendarEvents: [

@@ -1,11 +1,6 @@
-<!-- =========================================================================================
-    File Name: TodoAddNew.vue
-    Description: Add new todo component
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
+<!--
+  制定任务界面的左侧边栏
+-->
 
 
 <template>
@@ -15,7 +10,7 @@
         <div class="px-6 py-4">
             <div class="flex cursor-pointer" :class="{'text-primary': todoFilter == 'all'}" @click="applyTodoFilter('all')">
                 <feather-icon icon="MailIcon" :svgClasses="[{'text-primary stroke-current': todoFilter == 'all'}, 'h-6 w-6']"></feather-icon>
-                <span class="text-lg ml-3">All</span>
+                <span class="text-lg ml-3">所有</span>
             </div>
         </div>
 
@@ -23,7 +18,7 @@
 
         <!-- starred -->
         <div class="px-6 py-4">
-            <h5>Filters</h5>
+            <h5>过滤</h5>
 
             <template v-for="filter in todoFilters">
                 <div class="flex mt-6 cursor-pointer" :class="{'text-primary': todoFilter == filter.filter}" @click="applyTodoFilter(filter.filter)" :key="filter.filter">
@@ -37,7 +32,7 @@
         <vs-divider></vs-divider>
 
         <div class="px-6 py-4">
-            <h5>Labels</h5>
+            <h5>标签</h5>
             <div class="todo__lables-list">
                 <div class="todo__label flex items-center mt-6 cursor-pointer" v-for="(tag, index) in todoTags" :key="index" @click="applyTodoFilter(tag.value)">
                     <div class="h-4 w-4 rounded-full mr-4" :class="'bg-' + tag.color"></div>
@@ -54,21 +49,21 @@
 export default{
     data() {
         return {
-            todoFilters: [
-                { filterName: 'Starred', filter: 'starred', icon: 'StarIcon' },
-                { filterName: 'Important', filter: 'important', icon: 'InfoIcon' },
-                { filterName: 'Done', filter: 'done', icon: 'CheckIcon' },
-                { filterName: 'Trashed', filter: 'trashed', icon: 'TrashIcon' },
-            ]
+          todoFilters: [
+              { filterName: '收藏', filter: '收藏', icon: 'StarIcon' },
+              { filterName: '重要', filter: '重要', icon: 'InfoIcon' },
+              { filterName: '完成', filter: '完成', icon: 'CheckIcon' },
+              { filterName: '删除', filter: '删除', icon: 'TrashIcon' },
+          ],
+          todoTags: [
+            { text: '学习' ,value : '学习', color: 'primary' },
+            { text: '生活', value: '生活', color: 'warning'},
+            { text: '工作', value: '工作', color: 'success'},
+            { text: '其它', value: '其它', color: 'danger' },
+          ],
         }
     },
     computed: {
-        todoTags() {
-            return this.$store.state.todo.todoTags;
-        },
-        todoFilter() {
-            return this.$store.state.todo.todoFilter;
-        }
     },
     methods: {
         applyTodoFilter(filterName) {

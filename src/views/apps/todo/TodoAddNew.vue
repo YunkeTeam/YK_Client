@@ -1,19 +1,15 @@
-<!-- =========================================================================================
-    File Name: TodoAddNew.vue
-    Description: Add new todo component
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
+<!--
+  添加任务的表单
+-->
 
 
 <template>
     <div class="px-6 pb-2 pt-6">
-    <vs-button @click="activePrompt = true" class="w-full">Add Task</vs-button>
+    <vs-button @click="activePrompt = true" class="w-full">添加任务</vs-button>
     <vs-prompt
-        vs-title="Add Task"
-        vs-accept-text= "Add Task"
+        vs-title="添加任务"
+        vs-accept-text= "添加"
+        vsCancelText="取消"
         vs-button-cancel = "border"
         @vs-cancel="clearFields"
         @vs-accept="submitTodo"
@@ -45,8 +41,8 @@
 
                 <div class="vx-row">
                     <div class="vx-col w-full">
-                        <vs-input v-validate="'required'" name="title" class="w-full mb-4 mt-5" placeholder="Title" v-model="title" :color="validateForm ? 'success' : 'danger'" />
-                        <vs-textarea rows="5" label="Add description" v-model="desc" />
+                        <vs-input v-validate="'required'" name="title" class="w-full mb-4 mt-5" placeholder="标题" v-model="title" :color="validateForm ? 'success' : 'danger'" />
+                        <vs-textarea rows="5" label="添加描述" v-model="desc" />
                     </div>
                 </div>
 
@@ -72,15 +68,21 @@ export default {
 
             // task obj
             taskObj: {},
+            todoTags: [
+              { text: '学习' ,value : '学习', color: 'primary' },
+              { text: '生活', value: '生活', color: 'warning'},
+              { text: '工作', value: '工作', color: 'success'},
+              { text: '其它', value: '其它', color: 'danger' },
+            ],
         }
     },
     computed: {
         todoArrayLength() {
             return this.$store.getters['todo/todoArrayLength'];
         },
-        todoTags() {
-            return this.$store.state.todo.todoTags;
-        },
+        // todoTags() {
+        //     return this.$store.state.todo.todoTags;
+        // },
         validateForm() {
             return !this.errors.any() && this.title != '';
         }

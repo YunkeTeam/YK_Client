@@ -1,42 +1,38 @@
-<!-- =========================================================================================
-    File Name: ChatLog.vue
-    Description: Chat Application - Log of chat
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
+<!--
+  聊天面板
+-->
 <!-- hasSentPreviousMsg -->
 <template>
     <div id="component-chat-log" class="m-8" v-if="chatData">
-        <div v-for="(msg, index) in chatData.msg" class="msg-grp-container" :key="index">
+        <div v-for="(msg, index) in chatData" class="msg-grp-container" :key="msg.id">
 
-            <!-- If previouse msg is older than current time -->
-            <template v-if="chatData.msg[index-1]">
-                <vs-divider v-if="!isSameDay(msg.time, chatData.msg[index-1].time)">
-                    <span>{{ toDate(msg.time) }}</span>
+            <!-- 如果当前消息与前一个消息不是同一天，就画上分割线提示用户 -->
+            <template v-if="chatData[index-1]">
+                <vs-divider v-if="!isSameDay(msg.releaseTime, chatData[index-1].releaseTime)">
+                    <span>{{ toDate(msg.releaseTime) }}</span>
                 </vs-divider>
-                <div class="spacer mt-8" v-if="!hasSentPreviousMsg(chatData.msg[index-1].isSent, msg.isSent)"></div>
+                <div class="spacer mt-8" v-if="!hasSentPreviousMsg(chatData[index-1].sendId, msg.sendId)"></div>
             </template>
 
-            <div class="flex items-start" :class="[{'flex-row-reverse' : msg.isSent}]">
+            <div class="flex items-start" :class="[{'flex-row-reverse' : (msg.sendId === userId)}]">
 
-                <template v-if="chatData.msg[index-1]">
-                    <template v-if="(!hasSentPreviousMsg(chatData.msg[index-1].isSent, msg.isSent) || !isSameDay(msg.time, chatData.msg[index-1].time))">
-                        <vs-avatar size="40px" class="m-0 flex-shrink-0" :class="msg.isSent ? 'sm:ml-5 ml-3' : 'sm:mr-5 mr-3'" :src="senderImg(msg.isSent)"></vs-avatar>
+                <template v-if="chatData[index-1]">
+                    <!--当前消息是否与前一条消息是同一个发送者-->
+                    <template v-if="(!hasSentPreviousMsg(chatData[index-1].sendId, msg.sendId) || !isSameDay(msg.releaseTime, chatData[index-1].releaseTime))">
+                        <vs-avatar size="40px" class="m-0 flex-shrink-0" :class="msg.sendId === userId ? 'sm:ml-5 ml-3' : 'sm:mr-5 mr-3'" :src="senderImg(msg.sendId === userId)"></vs-avatar>
                     </template>
                 </template>
 
-                <template v-if="index == 0">
-                    <vs-avatar size="40px" class="m-0 flex-shrink-0" :class="msg.isSent ? 'sm:ml-5 ml-3' : 'sm:mr-5 mr-3'" :src="senderImg(msg.isSent)"></vs-avatar>
+                <template v-if="index === 0">
+                    <vs-avatar size="40px" class="m-0 flex-shrink-0" :class="msg.sendId === userId ? 'sm:ml-5 ml-3' : 'sm:mr-5 mr-3'" :src="senderImg(msg.sendId === userId)"></vs-avatar>
                 </template>
 
-                <template v-if="chatData.msg[index-1]">
-                    <div class="mr-16" v-if="!(!hasSentPreviousMsg(chatData.msg[index-1].isSent, msg.isSent) || !isSameDay(msg.time, chatData.msg[index-1].time))"></div>
+                <template v-if="chatData[index-1]">
+                    <div class="mr-16" v-if="!(!hasSentPreviousMsg(chatData[index-1].sendId, msg.sendId) || !isSameDay(msg.releaseTime, chatData[index-1].releaseTime))"></div>
                 </template>
 
-                <div class="msg break-words relative shadow-md rounded py-3 px-4 mb-2 rounded-lg max-w-sm" :class="{'bg-primary-gradient text-white': msg.isSent, 'border border-solid border-grey-light bg-white': !msg.isSent}">
-                    <span>{{ msg.textContent }}</span>
+                <div class="msg break-words relative shadow-md rounded py-3 px-4 mb-2 rounded-lg max-w-sm" :class="{'bg-primary-gradient text-white': (msg.sendId === userId), 'border border-solid border-grey-light bg-white': (msg.sendId !== userId)}">
+                    <span>{{ msg.content }}</span>
                 </div>
             </div>
         </div>
@@ -45,57 +41,45 @@
 
 <script>
 import contacts from './contacts'
+import {getAllChatMessage} from "../../../network";
 
 export default{
     props: {
-        userId: {
-            type: Number,
+      friend: {
+            type: Object,
             required: true,
-        }
+      }
     },
     data() {
         return {
             contacts: contacts,
+            chatData: [], // 聊天信息
+            userId: '', // 当前登录用户的id
         }
     },
     computed: {
-        chatData() {
-            return this.$store.getters['chat/chatDataOfUser'](this.userId);
-        },
-        contactIndex() {
-            return contacts.findIndex(contact => contact.id == this.userId);
-        },
-        userImg() {
-            if(this.contactIndex !== -1) return this.contacts[this.contactIndex].img;
-        },
-        activeUserImg() {
-            return this.$store.state.AppActiveUser.img;
-        },
+        // 发送者的头像
         senderImg() {
             return (isSentByActiveUser) => {
-                if (isSentByActiveUser) return require(`@/assets/images/portrait/small/${this.$store.state.AppActiveUser.img}`);
-                else return require(`@/assets/images/portrait/small/${this.contacts[this.contactIndex].img}`);
+                if (isSentByActiveUser) return this.$store.state.avatar;
+                else return this.friend.headImage;
             }
         },
         hasSentPreviousMsg() {
-            return (last_sender, current_sender) => last_sender == current_sender
+            return (last_sender, current_sender) => last_sender === current_sender
         },
     },
     methods: {
+        // 判断当前消息与上一条消息是否是同一天
         isSameDay(time_to, time_from) {
-            const date_time_to = new Date(Date.parse(time_to))
-            const date_time_from = new Date(Date.parse(time_from));
-            return date_time_to.getFullYear() === date_time_from.getFullYear() &&
-                date_time_to.getMonth() === date_time_from.getMonth() &&
-                date_time_to.getDate() === date_time_from.getDate();
+          return time_to.substr(0,10) === time_from.substr(0, 10)
+          return true;
         },
         toDate(time) {
-            const locale = "en-us";
-            const date_obj = new Date(Date.parse(time));
-            const monthName= date_obj.toLocaleString(locale, {
-                month: 'short'
-            });
-            return date_obj.getDate() + ' '  + monthName;
+          let year = time.substr(0, 4);
+          let month = time.substr(5, 2);
+          let day = time.substr(8, 2);
+          return year + '年' + month + '月' + day + '日';
         },
         scrollToBottom() {
             this.$nextTick(() => {
@@ -106,8 +90,31 @@ export default{
     updated() {
         this.scrollToBottom();
     },
+    watch: {
+      // 监听点击的当前好友
+      friend: {
+        // 好友id发生变化就会调用这个函数
+        handler(friend) {
+          // 请求所有的历史信息
+          getAllChatMessage({
+            toId: friend.friendId
+          }).then(res => {
+            this.chatData = []
+            for (let i = 0; i < res.data.data.length; i++) {
+              this.chatData.push(res.data.data[i]);
+            }
+          }).catch(err => {
+            console.log("错误信息: ", err)
+          })
+        },
+        // 立即处理，进入页面就触发
+        immediate: true
+      }
+    },
     mounted() {
         this.scrollToBottom();
+        this.userId = parseInt(localStorage.getItem("userId"));
     }
+
 }
 </script>

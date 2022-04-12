@@ -4,14 +4,11 @@
 <template>
     <div id="chat-app" class="border border-solid d-theme-border-grey-light rounded relative overflow-hidden">
         <vs-sidebar class="items-no-padding" parent="#chat-app" :click-not-close="clickNotClose" :hidden-background="clickNotClose" v-model="isChatSidebarActive" id="chat-list-sidebar">
-
-            <!-- USER PROFILE SIDEBAR -->
-            <user-profile :active="activeProfileSidebar" :userId="userProfileId" class="user-profile-container" @closeProfileSidebar="closeProfileSidebar"></user-profile>
-
             <div class="chat__profile-search flex p-4">
+                <!--头像-->
                 <div class="relative inline-flex">
-                    <vs-avatar class="m-0 border-2 border-solid border-white" color="primary" text="Titos" :src="$store.state.avatar" size="40px" @click="showProfileSidebar(activeUserId)" />
-                    <div class="h-3 w-3 border-white border border-solid rounded-full absolute right-0 bottom-0" :class="'bg-' + getStatusColor(true)"></div>
+                    <vs-avatar class="m-0 border-2 border-solid border-white" color="primary" text="Titos" :src="$store.state.avatar" size="40px" />
+                    <div class="h-3 w-3 border-white border border-solid rounded-full absolute right-0 bottom-0" :class="'bg-success'"></div>
                 </div>
                 <!--好友搜索-->
                 <vs-input icon="icon-search" icon-pack="feather" class="w-full mx-5 input-rounded-full no-icon-border" placeholder="搜索好友" v-model="searchQuery"/>
@@ -24,8 +21,8 @@
                 <div class="chat__chats-list mb-8">
                     <h3 class="text-primary mb-5 px-4">正在聊天</h3>
                     <ul class="chat__active-chats bordered-items">
-                        <li class="cursor-pointer" v-for="contact in sorted" :key="contact.id" @click="updateActiveChatUser(contact.id)">
-                            <chat-contact :contact="contact" :lastMessaged="chatLastMessaged(contact.id).time" :unseenMsg="chatUnseenMessages(contact.id)" :isActiveChatUser="isActiveChatUser(contact.id)"></chat-contact>
+                        <li class="cursor-pointer" v-for="contact in chatting" :key="contact.friendId" @click="updateActiveChatUser(contact.friendId)">
+                            <chat-contact :friendImg="contact.headImage" :contact="contact" :lastMessaged="contact.sendTime" :unseenMsg="contact.notReadNum" :isActiveChatUser="isActiveChatUser(contact)"></chat-contact>
                         </li>
                     </ul>
                 </div>
@@ -35,8 +32,8 @@
                 <div class="chat__contacts">
                     <h3 class="text-primary mb-5 px-4">好友列表</h3>
                     <ul class="chat__contacts bordered-items">
-                        <li class="cursor-pointer" v-for="contact in chatContacts" :key="contact.id" @click="updateActiveChatUser(contact.id)">
-                            <chat-contact :contact="contact"></chat-contact>
+                        <li class="cursor-pointer" v-for="contact in friendList" :key="contact.friendId" @click="updateActiveChatUser(contact)">
+                            <chat-contact :contact="contact" :unseenMsg="contact.notReadNum" :friendImg="contact.headImage"></chat-contact>
                         </li>
                     </ul>
                 </div>
@@ -47,12 +44,11 @@
         <div class="chat__bg app-fixed-height chat-content-area border border-solid d-theme-border-grey-light border-t-0 border-r-0 border-b-0" :class="{'sidebar-spacer--wide': clickNotClose, 'flex items-center justify-center': activeChatUser === null}">
             <template v-if="activeChatUser">
                 <div class="chat__navbar">
-<!--                    <chat-navbar :isSidebarCollapsed="!clickNotClose" :user-id="activeChatUser" :isPinnedProp="isChatPinned" @openContactsSidebar="toggleChatSidebar(true)" @showProfileSidebar="updateUserProfileId" @toggleIsChatPinned="toggleIsChatPinned"></chat-navbar>-->
-                    <chat-navbar :isSidebarCollapsed="!clickNotClose" :user-id="activeChatUser" :isPinnedProp="isChatPinned" @openContactsSidebar="toggleChatSidebar(true)"  @toggleIsChatPinned="toggleIsChatPinned"></chat-navbar>
+                    <chat-navbar :isSidebarCollapsed="!clickNotClose" :friend="activeChatUser" :isPinnedProp="isChatPinned" @openContactsSidebar="toggleChatSidebar(true)" @showProfileSidebar="updateUserProfileId" @toggleIsChatPinned="toggleIsChatPinned"></chat-navbar>
                 </div>
                 <VuePerfectScrollbar class="chat-content-scroll-area border border-solid d-theme-border-grey-light" :settings="settings" ref="chatLogPS">
                     <div class="chat__log" ref="chatLog">
-                        <chat-log :userId="activeChatUser" v-if="activeChatUser"></chat-log>
+                        <chat-log :friend="activeChatUser" v-if="activeChatUser" ref="chatMessage"></chat-log>
                     </div>
                 </VuePerfectScrollbar>
                 <div class="chat__input flex p-4 bg-white">
@@ -63,7 +59,7 @@
             <template v-else>
                 <div class="flex flex-col items-center">
                     <feather-icon icon="MessageSquareIcon" class="mb-4 bg-white p-8 shadow-md rounded-full" svgClasses="w-16 h-16"></feather-icon>
-                    <h4 class=" py-2 px-4 bg-white shadow-md rounded-full cursor-pointer" @click.stop="toggleChatSidebar(true)">Start Conversation</h4>
+                    <h4 class=" py-2 px-4 bg-white shadow-md rounded-full cursor-pointer" @click.stop="toggleChatSidebar(true)">开始聊天</h4>
                 </div>
             </template>
         </div>
@@ -74,99 +70,93 @@
 import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 import contacts from './contacts'
 import ChatContact from "./ChatContact.vue"
-import UserProfile from "./UserProfile.vue"
 import ChatNavbar from './ChatNavbar.vue'
 import ChatLog from './ChatLog.vue'
+import {getAllContactPerson} from "../../../network";
 
 export default{
     name: 'vx-sidebar',
     data() {
         return {
-            wsUrl: 'ws://127.0.0.1:8080/conversation/chat',
-            websocket: null,
-            active: true,
-            isHidden: false,
-            contacts: contacts,
-            searchContact: "",
-            activeProfileSidebar: false,
-            activeChatUser: null, // 点击通信的好友
-            userProfileId: -1,
-            typedMessage: "",
-            isChatPinned: false,
-            settings: {
-                maxScrollbarLength: 60,
-                wheelSpeed: 0.70,
+          wsUrl: 'ws://127.0.0.1:8080/conversation/chat',
+          websocket: null,
+          active: true,
+          isHidden: false,
+          contacts: contacts,
+          searchContact: "",
+          activeProfileSidebar: false,
+          activeChatUser: null, // 正在聊天的好友id
+          userProfileId: -1,
+          typedMessage: "",
+          isChatPinned: false,
+          settings: {
+              maxScrollbarLength: 60,
+              wheelSpeed: 0.70,
+          },
+          clickNotClose: true,
+          isChatSidebarActive: true,
+          windowWidth: window.innerWidth,
+          // 好友列表所有的聊天信息
+          chatting: [
+            {
+              friendId: 1,
+              userName: '张三',
+              content: '收到张三的新消息',
+              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
+              sendTime: '2022-04-12 02:35:13',
+              notReadNum: 1,
             },
-            clickNotClose: true,
-            isChatSidebarActive: true,
-            windowWidth: window.innerWidth,
+            {
+              friendId: 2,
+              userName: '李四',
+              content: '收到李四的新消息',
+              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
+              sendTime: '2022-04-12 02:35:13',
+              notReadNum: null
+            },
+          ],
+          friendList: [
+            {
+              friendId: 1,
+              userName: '张三',
+              content: '收到张三的新消息',
+              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
+              sendTime: '2022-04-12 02:35:13',
+              notReadNum: 1
+            },
+            {
+              friendId: 2,
+              userName: '李四',
+              content: '收到李四的新消息',
+              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
+              sendTime: '2022-04-12 02:35:13',
+              notReadNum: 2
+            },
+            {
+              friendId: 3,
+              userName: '王五',
+              content: '收到王五的信息消息',
+              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
+              sendTime: 'do not disturb',
+              notReadNum: null
+            },
+          ],
+          searchQuery: '' // 搜索框的内容
         }
     },
     computed: {
-        chatLastMessaged() {
-            return (userId) => this.$store.getters['chat/chatLastMessaged'](userId);
-        },
-        chatUnseenMessages() {
-            return (userId) => {
-                const unseenMsg = this.$store.getters['chat/chatUnseenMessages'](userId);
-                if(unseenMsg) return unseenMsg
-            };
-        },
-        sorted() {
-            return this.chats.slice().sort((x,y) => {
-                const xId = x.id;
-                const yId = y.id;
-                const chatDataX = this.$store.getters['chat/chatDataOfUser'](xId);
-                const chatDataY = this.$store.getters['chat/chatDataOfUser'](yId);
-                return (chatDataY.isPinned - chatDataX.isPinned)
-            })
-        },
-        activeUserId() {
-            return this.$store.state.AppActiveUser.id;
-        },
-        activeUserImg() {
-            return this.$store.state.AppActiveUser.img;
-        },
-        activeUserStatus() {
-            return this.$store.state.AppActiveUser.status;
-        },
-        getStatusColor() {
-            return (isActiveUser) => {
-                const userStatus = this.getUserStatus(isActiveUser)
-
-                if(userStatus == "online"){
-                    return "success"
-                }else if(userStatus == "do not disturb"){
-                    return "danger"
-                }else if(userStatus == "away"){
-                    return "warning"
-                }else{
-                    return "grey"
-                }
-            }
-        },
-        chats() {
-            return this.$store.getters['chat/chats'];
-        },
-        chatContacts() {
-            return this.$store.getters['chat/chatcontacts'];
-        },
-        searchQuery: {
-            get() {
-                return this.$store.state.chat.chatSearchQuery;
-            },
-            set(val) {
-                this.$store.dispatch('chat/setChatSearchQuery', val);
-            }
-        },
+        // 是否是被点击的用户
         isActiveChatUser() {
-            return (userId) => userId == this.activeChatUser
+            return (userId) => this.activeChatUser !== null ? userId === this.activeChatUser.friendId : false
         }
     },
+    watch: {
+      // 监听点击的当前好友
+      activeChatUser(newVal, oldVal) {
+        // console.log("我被触发了")
+      }
+    },
     methods: {
-        getUserStatus(isActiveUser) {
-            return (isActiveUser) ? this.$store.state.AppActiveUser.status : this.contacts[this.activeChatUser].status;
-        },
         closeProfileSidebar(value) {
             this.activeProfileSidebar = value
         },
@@ -174,36 +164,45 @@ export default{
             this.userProfileId = userId;
             this.activeProfileSidebar = !this.activeProfileSidebar;
         },
-        updateActiveChatUser(contactId) {
-            this.activeChatUser = contactId;
-            // if(this.$store.getters['chat/chatDataOfUser'](this.activeChatUser)) {
-            //     this.$store.dispatch('chat/markSeenAllMessages', contactId)
-            // }
-            // let chatData = this.$store.getters['chat/chatDataOfUser'](this.activeChatUser);
-            // if(chatData) this.isChatPinned = chatData.isPinned;
-            // else this.isChatPinned = false
-            // this.toggleChatSidebar();
-            // this.typedMessage = '';
-        },
-        showProfileSidebar(userId) {
-            this.userProfileId = userId;
-            this.activeProfileSidebar = !this.activeProfileSidebar;
-        },
-        sendMsg() {
-            if(!this.typedMessage) return
-            const payload = {
-                isPinned: this.isChatPinned,
-                'msg': {
-                    'textContent': this.typedMessage,
-                    'time': String(new Date()),
-                    'isSent': true,
-                    'isSeen': false,
-                },
-                'id': this.activeChatUser
-            }
-            this.$store.dispatch('chat/sendChatMessage', payload)
+        updateActiveChatUser(contact) {
+            this.activeChatUser = contact
+            this.toggleChatSidebar();
             this.typedMessage = '';
-            this.$refs.chatLogPS.$el.scrollTop = this.$refs.chatLog.scrollHeight;
+        },
+      /**
+       * 发送消息
+       */
+      sendMsg() {
+          if(!this.typedMessage) return
+          let releaseTime = this.dateFormat(new Date());
+          this.websocketOnSend({
+            toUserId: this.activeChatUser.friendId,
+            message: this.typedMessage,
+            sendTime: releaseTime
+          })
+          this.$refs.chatMessage.chatData.push({
+            content: this.typedMessage,
+            receiveId: this.activeChatUser.friendId,
+            sendId: parseInt(localStorage.getItem("userId")),
+            releaseTime: releaseTime
+          });
+          this.typedMessage = '';
+          this.$refs.chatLogPS.$el.scrollTop = this.$refs.chatLog.scrollHeight;
+        },
+        //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化
+        dateFormat(time) {
+          let date=new Date(time);
+          let year=date.getFullYear();
+          /* 在日期格式中，月份是从0开始的，因此要加0
+           * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+           * */
+          let month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+          let day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+          let hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+          let minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+          let seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+          // 拼接
+          return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
         },
         toggleIsChatPinned(value) {
             this.isChatPinned = value;
@@ -234,48 +233,57 @@ export default{
           this.websocket.onerror = this.websocketOnError;
           this.websocket.onclose = this.websocketOnClose;
         },
-      websocketOnMessage(e) {
-        // 接收服务器返回的信息
-        let data = JSON.parse(e.data);
-        if (data.isSystem) {
-          // 系统消息
-          console.log("接收到系统消息", data.message)
-        } else {
+        websocketOnMessage(e) {
+          // 接收服务器返回的信息
+          let data = JSON.parse(e.data);
+          if (data.isSystem) {
+            // 系统消息
+            console.log("接收到系统消息", data.message)
+          } else {
 
+          }
+        },
+        websocketOnOpen() {
+          console.log("连接成功")
+        },
+        websocketOnError() {
+          // 连接建立失败
+          setTimeout(() => {
+            this.initWebSocket()
+          }, 2000)
+        },
+        websocketOnClose(e) {
+          // console.log('断开连接', e)
+          // // 关闭
+          // // 离开路由之后断开websocket连接
+          // this.websocket.onclose();
+        },
+        websocketOnSend(data) {
+            this.websocket.send(JSON.stringify(data))
         }
-      },
-      websocketOnOpen() {
-        console.log("连接成功")
-        this.websocketOnSend({name: '张三'})
-      },
-      websocketOnError() {
-        // 连接建立失败
-        setTimeout(() => {
-          this.initWebSocket()
-        }, 2000)
-      },
-      websocketOnClose(e) {
-        // console.log('断开连接', e)
-        // // 关闭
-        // // 离开路由之后断开websocket连接
-        // this.websocket.onclose();
-      },
-      websocketOnSend(data) {
-          this.websocket.send(JSON.stringify(data))
-      }
     },
     components: {
         VuePerfectScrollbar,
         ChatContact,
-        UserProfile,
         ChatNavbar,
         ChatLog,
     },
     created() {
-        this.$nextTick(() => {
-            window.addEventListener('resize', this.handleWindowResize);
-        })
-        this.setSidebarWidth();
+      this.$nextTick(() => {
+          window.addEventListener('resize', this.handleWindowResize);
+      })
+      this.setSidebarWidth();
+      // 获取个人好友列表
+      getAllContactPerson().then(res => {
+        this.friendList = [];
+        if (res.data.code === 200) {
+          for (let i = 0; i < res.data.data.length; i++) {
+            this.friendList.push(res.data.data[i]);
+          }
+        }
+      }).catch(err => {
+        console.log("错误信息: ", err)
+      })
     },
     mounted() {
       this.initWebSocket()
@@ -283,8 +291,8 @@ export default{
     beforeDestroy: function () {
         // 离开路由之后断开websocket连接
         this.websocket.onclose();
-        window.removeEventListener('resize', this.handleWindowResize)
-    },
+        window.removeEventListener('resize', this.handleWindowResize);
+    }
 }
 </script>
 
