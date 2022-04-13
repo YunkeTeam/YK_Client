@@ -154,3 +154,21 @@ export function getAllChatMessage(datas) {
     params: datas
   })
 }
+
+// 将消息设置为未读消息
+export function doUpdateMessageStatus(datas) {
+  return request({
+    url: '/conversation/setComplete',
+    method: 'post',
+    params: datas
+  })
+}
+
+// 添加好友
+export function doAddFriend(datas) {
+  return request({
+    url: "/conversation/addFriend",
+    method: 'post',
+    params: datas
+  })
+}

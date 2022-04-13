@@ -13,7 +13,7 @@
             </div>
 
             <div class="chat__contact__meta flex self-start flex-col items-end w-1/6">
-                <span class="whitespace-no-wrap">{{ lastMessaged | date(true) }}</span>
+                <span class="whitespace-no-wrap" v-if="lastMessaged != null">{{ lastMessaged | date(true) }}</span>
                 <vs-avatar color="primary" :text="`${unseenMsg}`" size="20px" v-if="unseenMsg" />
             </div>
         </div>

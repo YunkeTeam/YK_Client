@@ -26,7 +26,8 @@ export default function request(config) {
   instance.interceptors.request.use(config => {
     // if (config.url !== "/user/verifyCode" &&
     if (
-        config.url !== "/post/like") {
+        config.url !== "/post/like" &&
+        config.url !== '/conversation/setComplete') {
       Vue.prototype.$vs.loading({
         type: 'corners'
       })

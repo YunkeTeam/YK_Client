@@ -18,10 +18,10 @@
             <VuePerfectScrollbar class="chat-scroll-area pt-4" :settings="settings">
 
                 <!-- 正在聊天列表 -->
-                <div class="chat__chats-list mb-8">
+                <div class="chat__chats-list mb-8" v-if="this.chatting.length != 0">
                     <h3 class="text-primary mb-5 px-4">正在聊天</h3>
                     <ul class="chat__active-chats bordered-items">
-                        <li class="cursor-pointer" v-for="contact in chatting" :key="contact.friendId" @click="updateActiveChatUser(contact.friendId)">
+                        <li class="cursor-pointer" v-for="contact in chatting" :key="contact.friendId" @click="updateActiveChatUser(contact)">
                             <chat-contact :friendImg="contact.headImage" :contact="contact" :lastMessaged="contact.sendTime" :unseenMsg="contact.notReadNum" :isActiveChatUser="isActiveChatUser(contact)"></chat-contact>
                         </li>
                     </ul>
@@ -72,7 +72,7 @@ import contacts from './contacts'
 import ChatContact from "./ChatContact.vue"
 import ChatNavbar from './ChatNavbar.vue'
 import ChatLog from './ChatLog.vue'
-import {getAllContactPerson} from "../../../network";
+import {doUpdateMessageStatus, getAllContactPerson} from "../../../network";
 
 export default{
     name: 'vx-sidebar',
@@ -97,24 +97,7 @@ export default{
           isChatSidebarActive: true,
           windowWidth: window.innerWidth,
           // 好友列表所有的聊天信息
-          chatting: [
-            {
-              friendId: 1,
-              userName: '张三',
-              content: '收到张三的新消息',
-              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
-              sendTime: '2022-04-12 02:35:13',
-              notReadNum: 1,
-            },
-            {
-              friendId: 2,
-              userName: '李四',
-              content: '收到李四的新消息',
-              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
-              sendTime: '2022-04-12 02:35:13',
-              notReadNum: null
-            },
-          ],
+          chatting: [],
           friendList: [
             {
               friendId: 1,
@@ -147,7 +130,7 @@ export default{
     computed: {
         // 是否是被点击的用户
         isActiveChatUser() {
-            return (userId) => this.activeChatUser !== null ? userId === this.activeChatUser.friendId : false
+            return (contact) => this.activeChatUser !== null ? contact.friendId == this.activeChatUser.friendId : false
         }
     },
     watch: {
@@ -166,6 +149,7 @@ export default{
         },
         updateActiveChatUser(contact) {
             this.activeChatUser = contact
+            this.activeChatUser.notReadNum = null;
             this.toggleChatSidebar();
             this.typedMessage = '';
         },
@@ -187,6 +171,7 @@ export default{
             releaseTime: releaseTime
           });
           this.typedMessage = '';
+          this.chatting.push(this.activeChatUser);
           this.$refs.chatLogPS.$el.scrollTop = this.$refs.chatLog.scrollHeight;
         },
         //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化
@@ -240,7 +225,32 @@ export default{
             // 系统消息
             console.log("接收到系统消息", data.message)
           } else {
-
+            if (this.activeChatUser != null && data.fromUserId == this.activeChatUser.friendId) {
+              this.$refs.chatMessage.chatData.push({
+                content: data.message,
+                receiveId: data.toUserId,
+                sendId: data.fromUserId,
+                releaseTime: data.sendTime.replace("T", " ")
+              });
+            } else {
+              // 更新消息状态
+              doUpdateMessageStatus({
+                toId: data.fromUserId,
+                time: data.sendTime.replace("T", " ")
+              }).then(res => {
+                for (let i = 0; i < this.friendList.length; i++) {
+                  if (this.friendList[i].friendId == data.fromUserId) {
+                    this.friendList[i].notReadNum = this.friendList[i].notReadNum + 1;
+                    this.friendList[i].content = data.message;
+                    this.friendList[i].sendTime = data.sendTime.replace("T", " ");
+                    break;
+                  }
+                }
+                // console.log("消息重置成功", res)
+              }).catch(err => {
+                // console.log("消息重置失败", err)
+              })
+            }
           }
         },
         websocketOnOpen() {
@@ -273,6 +283,9 @@ export default{
           window.addEventListener('resize', this.handleWindowResize);
       })
       this.setSidebarWidth();
+    },
+    mounted() {
+      this.initWebSocket()
       // 获取个人好友列表
       getAllContactPerson().then(res => {
         this.friendList = [];
@@ -280,13 +293,21 @@ export default{
           for (let i = 0; i < res.data.data.length; i++) {
             this.friendList.push(res.data.data[i]);
           }
+          if (this.$route.params.friendId) {
+            for (let i = 0; i < res.data.data.length; i++) {
+              if(res.data.data[i].friendId == this.$route.params.friendId) {
+                this.activeChatUser = res.data.data[i];
+                this.chatting.push(res.data.data[i]);
+                break;
+              }
+            }
+          }
         }
       }).catch(err => {
         console.log("错误信息: ", err)
       })
-    },
-    mounted() {
-      this.initWebSocket()
+      // console.log("参数哈哈哈 === ", this.$route.params.friendId)
+
     },
     beforeDestroy: function () {
         // 离开路由之后断开websocket连接
