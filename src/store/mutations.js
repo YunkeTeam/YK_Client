@@ -98,6 +98,15 @@ const mutations = {
     },
     updateAvatar(state, newAvatar) {
         this.state.avatar = newAvatar;
+    },
+    updateTodoFilter(state, newFilter) {
+        this.state.todoFilter = newFilter;
+    },
+    updateBlogReleaseNum(state, newVal) {
+        this.state.totalReleaseBlog = newVal;
+    },
+    updatePostReleaseNum(state, newVal) {
+        this.state.totalReleasePost = newVal;
     }
 }
 

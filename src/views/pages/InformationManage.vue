@@ -4,11 +4,26 @@
 <template>
   <div id="data-list-list-view" class="data-list-container">
 
-    <add-new-data-sidebar :isSidebarActive="addNewDataSidebar" @closeSidebar="addNewDataSidebar = false" />
+    <add-new-data-sidebar :isSidebarActive="addNewDataSidebar" @closeSidebar="closeSidebar" />
 
     <vs-table ref="table" multiple v-model="selected" pagination :max-items="itemsPerPage" search :data="post">
 
       <div slot="header" class="flex flex-wrap-reverse items-center flex-grow justify-between">
+        <vs-prompt
+            vsTitle="状态修改"
+            vsAcceptText="更新"
+            vsCancelText="取消"
+            @vs-cancel="val=''"
+            @vs-accept="updateLabel"
+            @vs-close="close"
+            :vs-active.sync="activePrompt">
+          <div class="con-exemple-prompt">
+            <span>请选择信息的状态</span>
+            <vs-select v-model="val" class="mt-5 w-full">
+              <vs-select-item :key="item.value" :value="item.value" :text="item.text" v-for="item in order_status_choices" />
+            </vs-select>
+          </div>
+        </vs-prompt>
 
         <div class="flex flex-wrap-reverse items-center">
 
@@ -26,7 +41,7 @@
                 <span @click="clickDelete">删除</span>
               </vs-dropdown-item>
               <vs-dropdown-item>
-                <span @click="clickUpdate">更新状态</span>
+                <span @click="clickUpdate" >更新状态</span>
               </vs-dropdown-item>
             </vs-dropdown-menu>
           </vs-dropdown>
@@ -66,28 +81,28 @@
       <template slot="thead">
         <vs-th sort-key="name">标题</vs-th>
         <vs-th sort-key="category">类型</vs-th>
-        <vs-th sort-key="order_status">信息状态</vs-th>
-        <vs-th sort-key="release_time">发布时间</vs-th>
+        <vs-th sort-key="popularity">状态</vs-th>
+        <vs-th sort-key="order_status">发表时间</vs-th>
       </template>
 
-      <template>
+      <template slot-scope="{data}">
           <tbody>
-            <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in post">
+            <vs-tr :data="tr" :key="tr.id" v-for="tr in data">
 
               <vs-td>
-                <p class="product-name font-medium">{{ tr.title }}</p>
+                <p class="product-name font-medium">{{ tr.infoTitle }}</p>
               </vs-td>
 
               <vs-td>
-                <p class="product-category">{{ tr.type }}</p>
+                <p class="product-category">{{ infoType(tr.type) }}</p>
               </vs-td>
 
               <vs-td>
-                <vs-chip :color="getOrderStatusColor(tr.status)" class="product-order-status">{{ tr.status }}</vs-chip>
+                <vs-chip :color="getOrderStatusColor(tr.status)" class="product-order-status">{{ infoStatus(tr.status) }}</vs-chip>
               </vs-td>
 
               <vs-td>
-                <p class="product-price">{{ tr.release_time }}</p>
+                <p class="product-price">{{ tr.createTime.replace("T", " ")}}</p>
               </vs-td>
 
             </vs-tr>
@@ -99,6 +114,14 @@
 
 <script>
 import AddNewDataSidebar from './AddNewDataSidebar.vue';
+import {
+  doDeleteInfo,
+  doDeleteMultiPosts,
+  doUpdateInfoStatus,
+  getMyReleaseInfo,
+  getPersonalPostByNum,
+  getPostByPage
+} from "../../network";
 
 export default {
   components: {
@@ -108,29 +131,17 @@ export default {
     return {
       selected: [],
       users: [],
-      itemsPerPage: 4,
+      itemsPerPage: 2,
       isMounted: false,
       addNewDataSidebar: false,
-      post: [
-        {
-          title: '意大利皮鞋',
-          type: '二手商品',
-          status: 'running',
-          release_time: '2020-3-21'
-        },
-        {
-          title: '招小牛马',
-          type: '兼职信息',
-          status: 'completed',
-          release_time: '2020-2-21'
-        },
-        {
-          title: '丢失了校园一卡通',
-          type: '失物招领',
-          status: 'canceled',
-          release_time: '2020-3-21'
-        }
-      ]
+      activePrompt:false,
+      post: [],
+      val:'发布中',
+      order_status_choices: [
+        {text:'发布中',value:'发布中'},
+        {text:'已完成',value:'已完成'},
+        {text:'取消',value:'取消'},
+      ],
     }
   },
   computed: {
@@ -140,12 +151,62 @@ export default {
       }
       return 0
     },
+    infoType() {
+      return (val) => {
+        if (val ==  1) {
+          return "二手商品";
+        } else if (val == 2) {
+          return "失物招领";
+        } else if (val == 3) {
+          return "兼职信息";
+        } else {
+          return "其它";
+        }
+      }
+    },
+    infoStatus() {
+      return (val) => {
+        if (val == 1) {
+          return "发布中";
+        } else if (val == 2) {
+          return "已完成";
+        } else if (val == 3) {
+          return "取消";
+        } else {
+          return "未知";
+        }
+      }
+    },
+    infoStatusNum() {
+      return (val) => {
+        if (val == '发布中'){
+          return 1;
+        } else if (val == '已完成') {
+          return 2;
+        } else if (val == '取消') {
+          return 3;
+        } else {
+          return 0;
+        }
+      }
+    }
   },
   methods: {
+    closeSidebar() {
+      // 获取发布的信息
+      getMyReleaseInfo().then(res => {
+        this.addNewDataSidebar = false;
+        this.post = [];
+        for (let i = 0; i < res.data.data.length; i++) {
+          this.post.push(res.data.data[i])
+        }
+      }).catch(err => {
+      })
+    },
     getOrderStatusColor(status) {
-      if(status == 'running') return "warning"
-      if(status == 'completed') return "success"
-      if(status == 'canceled') return "danger"
+      if(status == '1') return "warning"
+      if(status == '2') return "success"
+      if(status == '3') return "danger"
       return "primary"
     },
     getPopularityColor(num) {
@@ -167,30 +228,99 @@ export default {
       });
       return formattedData
     },
+    openConfirm() {
+      this.$vs.dialog({
+        type: 'confirm',
+        color: 'danger',
+        title: `确认`,
+        text: '您确定要删除这些数据吗？',
+        accept: this.acceptAlert
+      })
+    },
+    acceptAlert() {
+      let idList = [];
+      for (let i = 0; i < this.selected.length; i++) {
+        idList.push(this.selected[i].id)
+      }
+      doDeleteInfo({
+        idList: idList
+      }).then(res => {
+        if (res.data.code === 200) {
+          this.selected = []
+          getMyReleaseInfo().then(res => {
+            if (res.data.code === 200) {
+              this.post = []
+              for (let i = 0; i < res.data.data.length; i++) {
+                this.post.push(res.data.data[i]);
+              }
+              this.$vs.notify({
+                color: 'danger',
+                title: '删除通知',
+                text: '该条数据已成功删除'
+              })
+            }
+          }).catch(err => {
+          })
+        }
+      }).catch(err => {
+        console.log("err1 = ", err)
+      })
+    },
     clickDelete() {
-      alert("点击了删除按钮")
+      this.openConfirm();
     },
     clickUpdate() {
-      alert("点击了更新按钮")
-    }
-  },
-  created() {
-    const thisIns = this;
-    this.$http.get('https://firestore.googleapis.com/v1/projects/vuesax-admin/databases/(default)/documents/products/?pageSize=100')
-      .then(function (response) {
-        thisIns.users = thisIns.formatData(response.data.documents)
+      this.activePrompt = true;
+    },
+    updateLabel(){
+      let idList = [];
+      for (let i = 0; i < this.selected.length; i++) {
+        idList.push(this.selected[i].id)
+      }
+      doUpdateInfoStatus({
+        idList: idList,
+        infoStatus: this.infoStatusNum(this.val)
+      }).then(res => {
+        if (res.data.code === 200) {
+          this.selected = []
+          getMyReleaseInfo().then(res => {
+            if (res.data.code === 200) {
+              this.post = []
+              for (let i = 0; i < res.data.data.length; i++) {
+                this.post.push(res.data.data[i]);
+              }
+              this.$vs.notify({
+                color:'success',
+                title:'通知',
+                text:'消息状态更新成功'
+              })
+            }
+          }).catch(err => {
+          })
+        }
+      }).catch(err => {
+        console.log("err = ", err)
       })
-      .catch(function (error) {
-        thisIns.$vs.notify({
-          title:'Error',
-          text: error,
-          color:'danger',
-          iconPack: 'feather',
-          icon:'icon-alert-circle'})
-      });
+    },
+    close(){
+      this.$vs.notify({
+        color:'danger',
+        title:'已关闭',
+        text:'你关闭了弹窗!'
+      })
+    },
   },
   mounted() {
     this.isMounted = true;
+  },
+  created() {
+    getMyReleaseInfo().then(res => {
+      console.log(res)
+      for (let i = 0; i < res.data.data.length; i++) {
+        this.post.push(res.data.data[i])
+      }
+    }).catch(err => {
+    })
   }
 }
 </script>

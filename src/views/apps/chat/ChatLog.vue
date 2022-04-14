@@ -61,7 +61,7 @@ export default{
         // 发送者的头像
         senderImg() {
             return (isSentByActiveUser) => {
-                if (isSentByActiveUser) return this.$store.state.avatar;
+                if (isSentByActiveUser) return localStorage.getItem("headImage");
                 else return this.friend.headImage;
             }
         },

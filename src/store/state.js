@@ -23,11 +23,14 @@ const state = {
     newsDetail: {title:'你丫的'},
     blogDetail: {title: '博客标题'},
     avatar: '',
+    todoFilter: '所有', // 任务界面的过滤条件
+    totalReleaseBlog: 0, // 博客总的发布量
+    totalReleasePost: 0, // 帖子总的发布量
     AppActiveUser: {
         id: 0,
         name: 'John Doe',
         about: 'Dessert chocolate cake lemon drops jujubes. Biscuit cupcake ice cream bear claw brownie brownie marshmallow.',
-        img: 'avatar-s-11.png',
+        img: '',
         status: 'online',
     },
 

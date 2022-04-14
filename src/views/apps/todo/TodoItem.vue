@@ -1,23 +1,16 @@
-<!-- =========================================================================================
-    File Name: TodoItem.vue
-    Description: Single todo item component
-    ----------------------------------------------------------------------------------------
-    Item Name: Vuesax Admin - VueJS Dashboard Admin Template
-      Author: Pixinvent
-    Author URL: http://www.themeforest.net/user/pixinvent
-========================================================================================== -->
-
-
+<!--
+  任务列表展示界面
+-->
 <template>
     <div @click="displayPrompt" class="px-4 py-4 list-item-component">
         <div class="vx-row">
             <div class="vx-col w-full sm:w-5/6 flex sm:items-center sm:flex-row flex-col">
                 <div class="flex items-center">
-                    <vs-checkbox v-model="isDone" class="w-8 m-0 vs-checkbox-small" @click.stop></vs-checkbox>
-                    <h6 class="todo-title" :class="{'line-through': isDone}">{{ title }}</h6>
+                    <vs-checkbox v-model="todoItem.isDone" class="w-8 m-0 vs-checkbox-small" @click.stop="toggleIsDone"></vs-checkbox>
+                    <h6 class="todo-title" :class="{'line-through': todoItem.isDone}">{{ todoItem.taskTitle }}</h6>
                 </div>
                 <div class="todo-tags sm:ml-2 sm:my-0 my-2 flex">
-                    <vs-chip v-for="(tag, index) in tags" :key="index">
+                    <vs-chip v-for="(tag, index) in todoItem.tagNameList" :key="index">
                         <div class="h-2 w-2 rounded-full mr-1" :class="'bg-' + todoLabelColor(tag)"></div>
                         <span>{{ tag | capitalize }}</span>
                     </vs-chip>
@@ -25,24 +18,26 @@
             </div>
 
             <div class="vx-col w-full sm:w-1/6 ml-auto flex sm:justify-end">
-                <feather-icon icon="InfoIcon" class="cursor-pointer" :svgClasses="[{'text-success stroke-current': isImportant}, 'w-5', 'h-5 mr-4']" @click.stop="toggleIsImportant"></feather-icon>
-                <feather-icon icon="StarIcon" class="cursor-pointer" :svgClasses="[{'text-warning stroke-current': isStarred}, 'w-5', 'h-5 mr-4']" @click.stop="toggleIsStarred"></feather-icon>
-                <feather-icon icon="TrashIcon" class="cursor-pointer" svgClasses="w-5 h-5" @click.stop="moveToTrash" v-if="!isTrashed"></feather-icon>
+                <feather-icon icon="InfoIcon" class="cursor-pointer" :svgClasses="[{'text-success stroke-current': todoItem.isImportant}, 'w-5', 'h-5 mr-4']" @click.stop="toggleIsImportant"></feather-icon>
+                <feather-icon icon="StarIcon" class="cursor-pointer" :svgClasses="[{'text-warning stroke-current': todoItem.isStarred}, 'w-5', 'h-5 mr-4']" @click.stop="toggleIsStarred"></feather-icon>
+                <feather-icon icon="TrashIcon" class="cursor-pointer" svgClasses="w-5 h-5" @click.stop="moveToTrash" v-if="!todoItem.isTrashed"></feather-icon>
             </div>
         </div>
         <div class="vx-row">
             <div class="vx-col w-full">
-                <p class="mt-2 truncate" :class="{'line-through': isDone}">{{ desc }}</p>
+                <p class="mt-2 truncate" :class="{'line-through': todoItem.isDone}">{{ todoItem.taskDesc }}</p>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import {doUpdateOrAddTask} from "../../../network";
+
 export default{
     props: {
-        todoItemId: {
-            type: Number,
+        todoItem: {
+            type: Object,
             required: true,
         }
     },
@@ -51,72 +46,93 @@ export default{
         }
     },
     computed: {
-        isImportant: {
-            get() {
-                return this.$store.state.todo.todoArray[this.todoItemId].isImportant;
-            },
-            set(value) {
-                this.$store.dispatch('todo/toggleIsImportant', { id: this.todoItemId, value: value})
-            }
-        },
-        isStarred: {
-            get() {
-                return this.$store.state.todo.todoArray[this.todoItemId].isStarred;
-            },
-            set(value) {
-                this.$store.dispatch('todo/toggleIsStarred', { id: this.todoItemId, value: value})
-            }
-        },
-        isTrashed: {
-            get() {
-                return this.$store.state.todo.todoArray[this.todoItemId].isTrashed;
-            },
-            set(value) {
-                this.$store.dispatch('todo/moveToTrash', { id: this.todoItemId, value: value})
-            }
-        },
-        title() {
-            return this.$store.state.todo.todoArray[this.todoItemId].title;
-        },
-        desc() {
-            return this.$store.state.todo.todoArray[this.todoItemId].desc;
-        },
-        tags() {
-            return this.$store.state.todo.todoArray[this.todoItemId].tags;
-        },
-        isDone: {
-            get () {
-                return this.$store.state.todo.todoArray[this.todoItemId].isDone;
-            },
-            set (value) {
-                var payload = { id: this.todoItemId, value: value}
-                this.$store.dispatch('todo/toggleIsDone', payload)
-            }
-        },
         todoLabelColor() {
             return (label) => {
-                const tags = this.$store.state.todo.todoTags;
-                return tags.find((tag) => {
-                    return tag.value == label
-                }).color
+              let todoTags = [
+                { text: '学习' ,value : '学习', color: 'primary' },
+                { text: '生活', value: '生活', color: 'warning'},
+                { text: '工作', value: '工作', color: 'success'},
+                { text: '其它', value: '其它', color: 'danger' },
+              ];
+              return todoTags.find((tag) => {
+                  return tag.value == label
+              }).color
             }
         }
     },
     methods: {
         toggleIsImportant() {
-            this.isImportant = !this.isImportant;
+          doUpdateOrAddTask({
+            id: this.todoItem.id,
+            isImportant: !this.todoItem.isImportant
+          }).then(res => {
+            if (res.data.code == 200) {
+              this.$vs.notify({
+                title:'提示',
+                text: this.todoItem.isImportant == true ? "已取消标记为重要" : "已标记为重要",
+                color:'success',
+                position:'top-center'})
+              this.todoItem.isImportant = !this.todoItem.isImportant;
+            }
+          }).catch(err => {
+            console.log(err)
+          })
         },
         toggleIsStarred() {
-            this.isStarred = !this.isStarred;
+          doUpdateOrAddTask({
+            id: this.todoItem.id,
+            isStarred: !this.todoItem.isStarred
+          }).then(res => {
+            if (res.data.code == 200) {
+              this.$vs.notify({
+                title:'提示',
+                text: this.todoItem.isStarred == true ? "已取消收藏" : "已成功收藏",
+                color:'success',
+                position:'top-center'})
+              this.todoItem.isStarred = !this.todoItem.isStarred;
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+        },
+        toggleIsDone() {
+          doUpdateOrAddTask({
+            id: this.todoItem.id,
+            isDone: !this.todoItem.isDone
+          }).then(res => {
+            if (res.data.code == 200) {
+              this.$vs.notify({
+                title:'提示',
+                text: this.todoItem.isDone == true ? "已将任务标记为完成" : "已取消标记任务",
+                color:'success',
+                position:'top-center'})
+            }
+          }).catch(err => {
+            console.log(err)
+          })
         },
         moveToTrash() {
-            this.isTrashed = !this.isTrashed;
+          doUpdateOrAddTask({
+            id: this.todoItem.id,
+            isTrashed: !this.todoItem.isTrashed
+          }).then(res => {
+            if (res.data.code == 200) {
+              this.$vs.notify({
+                title:'提示',
+                text: "已删除该任务",
+                color:'success',
+                position:'top-center'})
+            }
+            this.todoItem.isTrashed = !this.todoItem.isTrashed;
+          }).catch(err => {
+            console.log(err)
+          })
         },
         editTodo() {
             alert();
         },
         displayPrompt() {
-            this.$emit('showDisplayPrompt', this.todoItemId);
+            this.$emit('showDisplayPrompt', this.todoItem);
         }
     },
 }

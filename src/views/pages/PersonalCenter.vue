@@ -14,15 +14,15 @@
               <vs-avatar color="primary" :text="$cookies.get('username')" :src="imageUrl" size="80px" class="mx-auto my-6 block"/>
               <div class="flex justify-between text-center">
                 <span>
-                    <p class="text-xl font-semibold">{{ card.user_meta_1_title }}</p>
+                    <p class="text-xl font-semibold">{{ totalReleasePostNum }}</p>
                     <small class="text-grey">{{ card.user_meta_1_label }}</small>
                 </span>
                 <span>
-                    <p class="text-xl font-semibold">{{ card.user_meta_2_title }}</p>
+                    <p class="text-xl font-semibold">{{totalReleaseInfoNum}}</p>
                     <small class="text-grey">{{ card.user_meta_2_label }}</small>
                 </span>
                 <span>
-                    <p class="text-xl font-semibold">{{ card.user_meta_3_title }}</p>
+                    <p class="text-xl font-semibold">{{ totalReleaseBlogNum}}</p>
                     <small class="text-grey">{{ card.user_meta_3_label }}</small>
                 </span>
               </div>
@@ -198,7 +198,7 @@ import { videoPlayer } from 'vue-video-player'
 import 'video.js/dist/video-js.css'
 import Datepicker from 'vuejs-datepicker';
 import * as lang from 'vuejs-datepicker/src/locale';
-import {getAllUserInfo} from "../../network";
+import {getAllUserInfo, getInfoNum} from "../../network";
 import {doModifyUserInfo} from "../../network";
 import {doUpdatePassword} from "../../network";
 
@@ -206,14 +206,11 @@ export default{
     data() {
         return {
             card: {
-                userImg: 'avatar-s-12.png',
+                userImg: '',
                 name: 'Titos',
                 profession: '后端工程师',
-                user_meta_1_title: 568,
                 user_meta_1_label: '帖子量',
-                user_meta_2_title: '78',
                 user_meta_2_label: '信息发布量',
-                user_meta_3_title: 12,
                 user_meta_3_label: '博客量',
             },
 
@@ -222,6 +219,9 @@ export default{
                 title: '标语',
                 // text: 'Cake sesame snaps cupcake gingerbread danish I love gingerbread. Apple pie pie jujubes chupa chups muffin halvah lollipop.',
             },
+            totalReleaseBlogNum: null,
+            totalReleasePostNum: null,
+            totalReleaseInfoNum: null,
             name: '',
             username: '',
             email: '',
@@ -307,6 +307,8 @@ export default{
           description: this.describe
         }).then(res => {
           if (res.data.code === 200) {
+            localStorage.setItem("username", this.username);
+            localStorage.setItem("headImage", this.headImage);
             this.$store.commit('updateAvatar', this.imageUrl);
             this.$vs.notify({ title: '更新提示', text: '用户信息修改成功', color: 'success', position: 'top-center' })
           }
@@ -359,6 +361,16 @@ export default{
   mounted() {
     this.wasSidebarOpen = this.$store.state.reduceButton;
     this.$store.commit('TOGGLE_REDUCE_BUTTON', true);
+    this.totalReleaseBlogNum = this.$store.state.totalReleaseBlog;
+    this.totalReleasePostNum = this.$store.state.totalReleasePost;
+    // 获取总的信息发布量
+    getInfoNum().then(res => {
+      if (res.data.code == 200) {
+        this.totalReleaseInfoNum = res.data.data;
+      }
+    }).catch(err => {
+      console.log("err = ", err)
+    })
   },
   created() {
       // 请求用户数据
@@ -371,7 +383,6 @@ export default{
         this.gender = res.data.data.gender;
         this.imageUrl = res.data.data.headImage;
         this.birthday = res.data.data.birthday.substr(0, 10);
-        this.$store.commit('updateAvatar', this.imageUrl);
       }).catch(err => {
         // if (err.data.code && err.data.code === 411) {
         //   this.openAlert();

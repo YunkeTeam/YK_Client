@@ -16,15 +16,6 @@ Vue.prototype.$http = axios
 import '../themeConfig.js'
 
 
-// Algolia - Instant Search
-import InstantSearch from 'vue-instantsearch';
-Vue.use(InstantSearch);
-
-
-// Firebase
-import '@/firebase/firebaseConfig'
-
-
 // ACL
 import acl from './acl/acl'
 

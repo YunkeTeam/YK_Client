@@ -41,6 +41,9 @@ export default function request(config) {
     return Promise.reject(error)
   });
   instance.interceptors.response.use((res) => {
+    if (res.headers.authorization) {
+      localStorage.setItem("token", res.headers.authorization);
+    }
     Vue.prototype.$vs.loading.close();
     // 请求响应后拦截
     if (res.status === 200) {

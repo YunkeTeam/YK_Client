@@ -1,3 +1,4 @@
+<!--博客编辑界面-->
 <template>
   <div id="profile-page">
     <p class="mb-4"><a href="javascript:;" rel="nofollow">云客</a> 个人博客编辑平台</p>
@@ -11,12 +12,14 @@
         :toolbars="toolbars"
         code-style="atom-one-dark"
         @save="activePrompt = true"
+        @imgAdd="uploadImg"
     >
     </mavon-editor>
     <vs-prompt
         @vs-cancel="clearValMultiple"
         @vs-accept="acceptAlert"
         @vs-close="close"
+        @
         :vs-is-valid="validName"
         :vs-active.sync="activePrompt"
         vs-title="保存博客"
@@ -36,6 +39,8 @@
 </template>
 
 <script>
+import {doReleaseArticle, doUploadImage} from "../../network";
+
   export default {
     name: "Markdown",
     data() {
@@ -98,12 +103,43 @@
       }
     },
     methods:{
+      //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化
+      dateFormat(time) {
+        let date=new Date(time);
+        let year=date.getFullYear();
+        /* 在日期格式中，月份是从0开始的，因此要加0
+         * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+         * */
+        let month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+        let day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+        let hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+        let minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+        let seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+        // 拼接
+        return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
+      },
       acceptAlert(){
-        this.clearValMultiple();
-        this.$vs.notify({
-          color:'success',
-          title:'保存成功',
-          text:'文章已经成功保存到数据库中'
+        let article = JSON.stringify({
+          articleTitle: this.valMultipe.value1,
+          articleContent: this.$refs.md.d_render,
+          articleText: this.$refs.md.d_value,
+          articleCover: '',
+          category: this.valMultipe.value2,
+          status: 1,
+          createTime: this.dateFormat(new Date)
+        });
+        doReleaseArticle({
+          jsonObject: article
+        }).then(res => {
+          this.clearValMultiple();
+          this.$vs.notify({
+            color:'success',
+            title:'保存成功',
+            text:'文章已经成功保存到数据库中'
+          })
+          this.doc = '';
+        }).catch(err => {
+          console.log(err)
         })
       },
       close(){
@@ -116,6 +152,26 @@
       clearValMultiple() {
         this.valMultipe.value1 = "";
         this.valMultipe.value2 = "";
+      },
+      // 上传图片
+      uploadImg(pos, file) {
+        // 第一步，将图片上传到服务器
+        let formData = new FormData();
+        formData.append("file", file);
+        doUploadImage(formData).then(res => {
+          if (res.data.code == 200) {
+            console.log(res)
+            // 第二步，将返回的url替换到文本原位置![...](0)->![...](url)
+            /**
+             * $vm 指为mavonEditor实例，可以通过如下两种方式获取
+             * 1. 通过引入对象获取: `import {mavonEditor} from ...` 等方式引入后，`$vm`为`mavonEditor`
+             * 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
+             */
+            this.$refs.md.$img2Url(pos, res.data.data.url);
+          }
+        }).catch(err => {
+          console.log(err)
+        })
       }
     }
   }

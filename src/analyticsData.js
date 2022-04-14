@@ -192,12 +192,12 @@ export default {
     },
     revenueComparisonLine: {
         series: [{
-                name: "This Month",
-                data: [45000, 47000, 44800, 47500, 45500, 48000, 46500, 48600]
+                name: "本月",
+                data: [0, 1, 0, 2, 0, 1, 0, 1]
             },
             {
-                name: "Last Month",
-                data: [46000, 48000, 45500, 46600, 44500, 46500, 45000, 47000]
+                name: "上月",
+                data: [4, 11, 7, 2, 6, 1, 9, 1]
             }
         ],
         chartOptions: {
@@ -256,7 +256,7 @@ export default {
                         cssClass: 'text-grey fill-current',
                     },
                     formatter: function(val) {
-                        return val > 999 ? (val / 1000).toFixed(1) + 'k' : val;
+                        return val > 999 ? (val / 1000).toFixed(1) + 'k篇' : val + '篇';
                     }
                 }
             },

@@ -104,7 +104,7 @@ export default {
         //   id: 1,
         //   postCover: 'https://static.kurihada.com/yunke/profile0.jpg',
         //   title: '我是标题',
-        //   content: '这是张三的帖子,请多多关照',
+        //   content: '这是张三的帖currentPage子,请多多关照',
         //   likes: 20,
         //   createTime: '2022-04-03 21:58:01'
         // },

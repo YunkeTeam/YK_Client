@@ -7,7 +7,7 @@
             <div class="chat__profile-search flex p-4">
                 <!--头像-->
                 <div class="relative inline-flex">
-                    <vs-avatar class="m-0 border-2 border-solid border-white" color="primary" text="Titos" :src="$store.state.avatar" size="40px" />
+                    <vs-avatar class="m-0 border-2 border-solid border-white" color="primary" text="Titos" :src="headImage" size="40px" />
                     <div class="h-3 w-3 border-white border border-solid rounded-full absolute right-0 bottom-0" :class="'bg-success'"></div>
                 </div>
                 <!--好友搜索-->
@@ -79,6 +79,7 @@ export default{
     data() {
         return {
           wsUrl: 'ws://127.0.0.1:8080/conversation/chat',
+          headImage: '',
           websocket: null,
           active: true,
           isHidden: false,
@@ -158,6 +159,8 @@ export default{
        */
       sendMsg() {
           if(!this.typedMessage) return
+          // 更新左侧好友列表对应好友的最新消息
+          this.activeChatUser.content = this.typedMessage;
           let releaseTime = this.dateFormat(new Date());
           this.websocketOnSend({
             toUserId: this.activeChatUser.friendId,
@@ -258,9 +261,9 @@ export default{
         },
         websocketOnError() {
           // 连接建立失败
-          setTimeout(() => {
-            this.initWebSocket()
-          }, 2000)
+          // setTimeout(() => {
+          //   this.initWebSocket()
+          // }, 2000)
         },
         websocketOnClose(e) {
           // console.log('断开连接', e)
@@ -285,6 +288,7 @@ export default{
       this.setSidebarWidth();
     },
     mounted() {
+      this.headImage = localStorage.getItem("headImage");
       this.initWebSocket()
       // 获取个人好友列表
       getAllContactPerson().then(res => {

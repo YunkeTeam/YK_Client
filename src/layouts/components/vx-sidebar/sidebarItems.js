@@ -139,11 +139,10 @@ export default [
   },
   // 左侧菜单栏——关于
   {
-    url: 'https://pixinvent.com/demo/vuesax-vuejs-admin-dashboard-template/documentation/',
+    url: '/pages/About',
     name: "About",
     icon: "UsersIcon",
     slug: "external",
     i18n: "About",
-    target: "_blank"
   },
 ]

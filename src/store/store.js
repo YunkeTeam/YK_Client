@@ -18,20 +18,11 @@ import actions from "./actions"
 
 Vue.use(Vuex)
 
-import moduleTodo from './todo/moduleTodo.js'
-import moduleCalendar from './calendar/moduleCalendar.js'
-import moduleChat from './chat/moduleChat.js'
-
 
 export default new Vuex.Store({
     getters,
     mutations,
     state,
     actions,
-    modules: {
-        todo: moduleTodo,
-        calendar: moduleCalendar,
-        chat: moduleChat,
-    },
     strict: process.env.NODE_ENV !== 'production'
 })

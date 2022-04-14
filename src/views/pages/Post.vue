@@ -13,7 +13,7 @@
                 </div>
                 <div class="profile-img-container pointer-events-none">
                     <div>
-                        <vs-avatar class="user-profile-img" :src="require(`@/assets/images/profile/user-uploads/${userInfo.profileImg}`)" size="85px" />
+                        <vs-avatar class="user-profile-img" :src="userInfo.profileImg" size="85px" />
                     </div>
                     <div class="profile-actions pointer-events-auto flex" @click="isReleaseCard = true">
                         <vs-button icon-pack="feather" radius icon="icon-edit-2"></vs-button>
@@ -166,7 +166,7 @@ export default {
           isNavOpen: false,
           userPoll: '',
           userInfo: {
-              profileImg: 'user-13.jpg',
+              profileImg: '',
           },
           mediaExtensions: { img: ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'exif', 'tiff'], video: ['avi', 'flv', 'wmv', 'mov', 'mp4', '3gp'] },
           suggestedFriends: [
@@ -175,7 +175,6 @@ export default {
 
           ],
           userCoverImg: 'cover.jpg',
-          userLatestPhotos: ['user-01.jpg', 'user-02.jpg', 'user-04.jpg', 'user-03.jpg', 'user-05.jpg', 'user-06.jpg', 'user-07.jpg', 'user-08.jpg', 'user-09.jpg'],
           userPosts: [
               {
                 user: {
@@ -361,6 +360,7 @@ export default {
       AddPostCard
   },
   mounted() {
+    this.userInfo.profileImg = localStorage.getItem('headImage');
       this.wasSidebarOpen = this.$store.state.reduceButton;
       // this.$store.commit('TOGGLE_REDUCE_BUTTON', true)
     // 获取帖子信息

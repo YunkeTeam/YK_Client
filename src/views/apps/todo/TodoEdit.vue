@@ -50,25 +50,27 @@
 </template>
 
 <script>
+import {doDeleteTask, doUpdateOrAddTask} from "../../../network";
+
 export default {
     props: {
         displayPrompt: {
             type: Boolean,
             required: true,
         },
-        todoItemId: {
-            type: Number,
+        todoItem: {
+            type: Object,
             required: true,
         }
     },
     data() {
         return {
-            titleLocal: this.$store.state.todo.todoArray[this.todoItemId].title,
-            descLocal: this.$store.state.todo.todoArray[this.todoItemId].desc,
-            isDoneLocal: this.$store.state.todo.todoArray[this.todoItemId].isDone,
-            isImportantLocal: this.$store.state.todo.todoArray[this.todoItemId].isImportant,
-            isStarredLocal: this.$store.state.todo.todoArray[this.todoItemId].isStarred,
-            tagsLocal: this.$store.state.todo.todoArray[this.todoItemId].tags,
+            titleLocal: this.todoItem.taskTitle,
+            descLocal: this.todoItem.taskDesc,
+            isDoneLocal: this.todoItem.isDone,
+            isImportantLocal: this.todoItem.isImportant,
+            isStarredLocal: this.todoItem.isStarred,
+            tagsLocal: this.todoItem.tagNameList,
             todoTags: [
               { text: '学习' ,value : '学习', color: 'primary' },
               { text: '生活', value: '生活', color: 'warning'},
@@ -89,14 +91,6 @@ export default {
         validateForm() {
             return !this.errors.any() && this.titleLocal != '';
         },
-        isTrashed: {
-            get() {
-                return this.$store.state.todo.todoArray[this.todoItemId].isTrashed;
-            },
-            set(value) {
-                this.$store.dispatch('todo/moveToTrash', { id: this.todoItemId, value: value})
-            }
-        },
     },
     methods: {
         toggleIsImportant() {
@@ -106,23 +100,58 @@ export default {
             this.isStarredLocal = !this.isStarredLocal;
         },
         removeTodo() {
-            this.isTrashed = true;
+          if (this.$store.state.todoFilter == '删除') {
+            let idList = [this.todoItem.id]
+            doDeleteTask({
+              idList: idList
+            }).then(res => {
+              if (res.data.code == 200) {
+                this.$vs.notify({
+                  title:'提示',
+                  text: '任务已成功删除',
+                  color:'primary',
+                  position:'top-center'})
+              }
+            }).catch(err => {
+              console.error(err)
+            })
+          } else {
+            doUpdateOrAddTask({
+              id: this.todoItem.id,
+              isTrashed: true
+            }).then(res => {
+              if (res.data.code == 200) {
+                this.todoItem.isTrashed = true;
+              }
+            }).catch(err => {
+              console.error("err = ", err)
+            })
+          }
         },
         init() {
-            this.titleLocal = this.$store.state.todo.todoArray[this.todoItemId].title;
-            this.descLocal = this.$store.state.todo.todoArray[this.todoItemId].desc;
-            this.isDoneLocal = this.$store.state.todo.todoArray[this.todoItemId].isDone;
-            this.isImportantLocal = this.$store.state.todo.todoArray[this.todoItemId].isImportant;
-            this.isStarredLocal = this.$store.state.todo.todoArray[this.todoItemId].isStarred;
-            this.tagsLocal = this.$store.state.todo.todoArray[this.todoItemId].tags;
+
         },
         submitTodo() {
-            this.$store.dispatch('todo/setTodoTitle', { id: this.todoItemId, title: this.titleLocal})
-            this.$store.dispatch('todo/setTodoDesc', { id: this.todoItemId, desc: this.descLocal})
-            this.$store.dispatch('todo/toggleIsImportant', { id: this.todoItemId, value: this.isImportantLocal})
-            this.$store.dispatch('todo/toggleIsStarred', { id: this.todoItemId, value: this.isStarredLocal})
-            this.$store.dispatch('todo/updateTags', { id: this.todoItemId, newTags: this.tagsLocal})
-            this.$store.dispatch('todo/toggleIsDone', { id: this.todoItemId, value: this.isDoneLocal})
+          let taskObj = {};
+          taskObj.id = this.todoItem.id;
+          taskObj.taskTitle = this.titleLocal;
+          taskObj.taskDesc = this.descLocal;
+          taskObj.isImportant = this.isImportantLocal;
+          taskObj.isDone = this.isDoneLocal;
+          taskObj.isStarred = this.isStarredLocal;
+          taskObj.tagNameList = this.tagsLocal;
+          doUpdateOrAddTask(taskObj).then(res => {
+            if (res.data.code == 200) {
+              this.todoItem.taskTitle = this.titleLocal;
+              this.todoItem.taskDesc = this.descLocal;
+              this.todoItem.isImportant = this.isImportantLocal;
+              this.todoItem.isDone = this.isDoneLocal;
+              this.todoItem.isStarred = this.isStarredLocal;
+              this.todoItem.tagNameList = this.tagsLocal;
+            }
+          }).catch(err => {
+            console.error("err = ", err)
+          })
         }
     },
 }

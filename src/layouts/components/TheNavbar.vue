@@ -83,8 +83,8 @@
 			<!-- USER META -->
 			<div class="the-navbar__user-meta flex items-center">
 				<div class="text-right leading-tight hidden sm:block">
-					<p class="font-semibold">Titos</p>
-					<small>Available</small>
+					<p class="font-semibold">{{username}}</p>
+					<small class="text-primary">{{role}}</small>
 				</div>
 				<vs-dropdown vs-custom-content vs-trigger-click class="cursor-pointer">
 					<div class="con-img ml-3">
@@ -96,7 +96,7 @@
 							width="40"
 							height="40"
 							class="rounded-full shadow-md cursor-pointer block" />
-            <vs-avatar color="primary" text="Titos" :src="$store.state.avatar" size="40px"/>
+            <vs-avatar color="primary" text="Titos" :src="headImage" size="40px"/>
 					</div>
 					<vs-dropdown-menu class="vx-navbar-dropdown">
 						<ul style="min-width: 9rem">
@@ -145,19 +145,14 @@ export default {
             navbarSearchAndPinList: this.$store.state.navbarSearchAndPinList,
             searchQuery: '',
             showFullSearch: false,
-            unreadNotifications: [
-                { index: 0, title: 'New Message', msg: 'Are your going to meet me tonight?', icon: 'MessageSquareIcon', time: 'Wed Jan 30 2019 07:45:23 GMT+0000 (GMT)', category: 'primary' },
-                { index: 1, title: 'New Order Recieved', msg: 'You got new order of goods.', icon: 'PackageIcon', time: 'Wed Jan 30 2019 07:45:23 GMT+0000 (GMT)', category: 'success' },
-                { index: 2, title: 'Server Limit Reached!', msg: 'Server have 99% CPU usage.', icon: 'AlertOctagonIcon', time: 'Thu Jan 31 2019 07:45:23 GMT+0000 (GMT)', category: 'danger' },
-                { index: 3, title: 'New Mail From Peter', msg: 'Cake sesame snaps cupcake', icon: 'MailIcon', time: 'Fri Feb 01 2019 07:45:23 GMT+0000 (GMT)', category: 'primary' },
-                { index: 4, title: 'Bruce\'s Party', msg: 'Chocolate cake oat cake tiramisu', icon: 'CalendarIcon', time: 'Fri Feb 02 2019 07:45:23 GMT+0000 (GMT)', category: 'warning' },
-            ],
             settings: { // perfectscrollbar settings
                 maxScrollbarLength: 60,
                 wheelSpeed: .60,
             },
             autoFocusSearch: false,
             showBookmarkPagesDropdown: false,
+            username: '',
+            headImage: '',
         }
     },
     watch: {
@@ -193,7 +188,18 @@ export default {
             else if (locale == "de") return { flag: "de", lang: '德语' }
             else if (locale == "zh") return { flag: "zh", lang: '中文'}
         },
-
+        role() {
+          let roleType = localStorage.getItem("role");
+          if (roleType == 1) {
+            return "普通用户";
+          } else if (roleType == 2) {
+            return "消息发布员";
+          } else if (roleType == 3) {
+            return "管理员";
+          } else {
+            return "未知";
+          }
+        },
         // BOOKMARK & SEARCH
         data() {
             return this.$store.state.navbarSearchAndPinList;
@@ -299,7 +305,11 @@ export default {
             this.$store.dispatch('eCommerce/toggleItemInCart', item)
         }
     },
-    directives: {
+    mounted() {
+      this.username = localStorage.getItem("username");
+      this.headImage = localStorage.getItem("headImage");
+    },
+  directives: {
         'click-outside': {
             bind: function(el, binding) {
                 const bubble = binding.modifiers.bubble

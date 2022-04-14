@@ -3,7 +3,7 @@
  -->
 
 <template>
-    <v-tour name="vuesaxTour" :steps="steps">
+    <v-tour name="vuesaxTour" :steps="steps" v-if="currentPath=='/home/personalData'">
         <template slot-scope="tour">
             <transition name="fade">
                 <v-step
@@ -86,13 +86,26 @@ export default{
             type: Array
         }
     },
+    data() {
+      return {
+        currentPath: '', // 记录当前路径
+      }
+    },
     watch: {
       '$route.path'() {
         this.$tours['vuesaxTour'].stop()
       }
     },
     mounted() {
+      // this.currentPath = this.$route.path;
+      try {
         this.$tours['vuesaxTour'].start()
+      } catch (e) {
+
+      }
+    },
+    created() {
+      this.currentPath = this.$route.path
     }
 }
 </script>

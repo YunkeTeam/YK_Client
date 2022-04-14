@@ -2,12 +2,10 @@
 
 <template>
   <div>
-    <ais-instant-search
-        :search-client="searchClient"
-        index-name="instant_search" id="algolia-instant-search-demo">
+    <div index-name="instant_search" id="algolia-instant-search-demo">
 
       <!-- AIS CONFIG -->
-      <ais-configure :hits-per-page.camel="9" />
+<!--      <ais-configure :hits-per-page.camel="9" />-->
 
       <div class="algolia-header mb-4">
         <div class="flex md:items-end items-center justify-between flex-wrap">
@@ -27,8 +25,6 @@
 
               <!-- 排序 -->
               <vs-select
-                  :value="currentRefinement"
-                  @input="(val) => refine(val)"
                   class="mr-4 vs-input-shadow-drop vs-select-no-border d-theme-input-dark-bg w-48">
                 <vs-select-item v-for="item in sortType" :key="item.value" :value="item.value" :text="item.label" />
               </vs-select>
@@ -61,41 +57,41 @@
           <div class="p-6 filter-container">
             <!-- MULTI RANGE -->
             <h6 class="font-bold mb-3">不同范围</h6>
-            <filter-radio></filter-radio>
+            <filter-radio @infoTimeEvent="timeFilter"></filter-radio>
 
             <vs-divider />
 
             <!-- CATEGORIES -->
             <h6 class="font-bold mb-4">信息类型</h6>
-            <info-type></info-type>
+            <info-type @infoTypeEvent="infoFilter"></info-type>
 
             <vs-divider />
 
-            <vs-button @click.prevent="true" :disabled="false">CLEAR ALL FILTERS</vs-button>
+            <vs-button @click.prevent="true" :disabled="false">清除所有过滤</vs-button>
           </div>
         </vs-sidebar>
 
         <!-- RIGHT COL -->
         <div :class="{'sidebar-spacer-with-margin': clickNotClose}">
           <!-- 搜索框 -->
-          <div class="relative mb-8">
+<!--          <div class="relative mb-8">-->
 
-            <!-- SEARCH INPUT -->
-            <vs-input class="w-full vs-input-shadow-drop vs-input-no-border d-theme-input-dark-bg" placeholder="Search here" v-model="currentRefinement" @input="refine($event)" @keyup.esc="refine('')"  size="large" />
+<!--            &lt;!&ndash; SEARCH INPUT &ndash;&gt;-->
+<!--            <vs-input class="w-full vs-input-shadow-drop vs-input-no-border d-theme-input-dark-bg" placeholder="Search here" v-model="currentRefinement" @input="refine($event)" @keyup.esc="refine('')"  size="large" />-->
 
-            <!-- SEARCH LOADING -->
-            <span :hidden="!isSearchStalled">Loading...</span>
+<!--            &lt;!&ndash; SEARCH LOADING &ndash;&gt;-->
+<!--            <span :hidden="!isSearchStalled">Loading...</span>-->
 
-            <!-- SEARCH ICON -->
-            <div slot="submit-icon" class="absolute top-0 right-0 py-4 px-6" v-show="!currentRefinement">
-              <feather-icon icon="SearchIcon" svgClasses="h-6 w-6" />
-            </div>
+<!--            &lt;!&ndash; SEARCH ICON &ndash;&gt;-->
+<!--            <div slot="submit-icon" class="absolute top-0 right-0 py-4 px-6" v-show="!currentRefinement">-->
+<!--              <feather-icon icon="SearchIcon" svgClasses="h-6 w-6" />-->
+<!--            </div>-->
 
-            <!-- CLEAR INPUT ICON -->
-            <div slot="reset-icon" class="absolute top-0 right-0 py-4 px-6" v-show="currentRefinement">
-              <feather-icon icon="XIcon" svgClasses="h-6 w-6 cursor-pointer" @click="refine('')" />
-            </div>
-          </div>
+<!--            &lt;!&ndash; CLEAR INPUT ICON &ndash;&gt;-->
+<!--            <div slot="reset-icon" class="absolute top-0 right-0 py-4 px-6" v-show="currentRefinement">-->
+<!--              <feather-icon icon="XIcon" svgClasses="h-6 w-6 cursor-pointer" @click="refine('')" />-->
+<!--            </div>-->
+<!--          </div>-->
           <!-- SEARCH RESULT -->
             <div>
               <!-- GRID VIEW -->
@@ -116,14 +112,10 @@
             </div>
 
           <!-- 翻页 -->
-          <vs-pagination
-              :total="nbPages"
-              :max="7"
-              :value="currentRefinement + 1"
-              @input="(val) => { refine(val - 1) }" />
+          <vs-pagination :total="totalPage" v-model="currentPageNum"></vs-pagination>
         </div>
       </div>
-    </ais-instant-search>
+    </div>
   </div>
 </template>
 
@@ -131,6 +123,7 @@
 import algoliasearch from 'algoliasearch/lite';
 import FilterRadio from './FilterRadio.vue'
 import InfoType from "./InfoType";
+import {getInfoByNum} from "../../network";
 
 export default {
   components: {
@@ -141,10 +134,13 @@ export default {
   },
   data() {
     return {
-      searchClient: algoliasearch(
-          'latency',
-          '6be0576ff61c053d5f9a3225e2a90f76'
-      ),
+      totalPage: 0, // 总页数
+      currentPageNum: 1, // 当前所在的页面
+      pageSize: 6, // 页面上展示信息的个数
+      infoType: 'allType',
+      timeScope: 'noban',
+      infoStartTime: null,
+      infoEndTime: null,
       // Filter Sidebar
       isFilterSidebarActive: true,
       clickNotClose: true,
@@ -156,10 +152,10 @@ export default {
         { value: 'earliest_release', label: '最早发布' },
       ],
       info: [
-        { imgUrl: require(`@/assets/images/pages/404.png`), title: '皮鞋', description: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: '二手商品', releaseTime: '2022-03-22'},
-        { imgUrl: require(`@/assets/images/pages/404.png`), title: '招小牛马', description: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: '兼职信息', releaseTime: '2022-03-22'},
-        { imgUrl: require(`@/assets/images/pages/404.png`), title: '丢失一卡通', description: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: '失物招领', releaseTime: '2022-03-22'},
-        { imgUrl: require(`@/assets/images/pages/404.png`), title: '零食', description: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: '二手商品', releaseTime: '2022-03-22'}
+        { infoCover: require(`@/assets/images/pages/404.png`), infoTitle: '皮鞋', infoContent: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: 1, createTime: '2022-03-22'},
+        { infoCover: require(`@/assets/images/pages/404.png`), infoTitle: '招小牛马', infoContent: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: 2, createTime: '2022-03-22'},
+        { infoCover: require(`@/assets/images/pages/404.png`), infoTitle: '丢失一卡通', infoContent: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: 3, createTime: '2022-03-22'},
+        { infoCover: require(`@/assets/images/pages/404.png`), infoTitle: '零食', infoContent: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: 1, createTime: '2022-03-22'}
       ]
     };
   },
@@ -171,14 +167,38 @@ export default {
             value.max !== null ? value.max : range.max,
           ];
     },
-
-    // GRID VIEW
-    isInCart() {
-      return (itemId) => this.$store.getters['eCommerce/isInCart'](itemId)
-    },
-    isInWishList() {
-      return (itemId) => this.$store.getters['eCommerce/isInWishList'](itemId)
-    },
+    infoTypeNum() {
+      if (this.infoType == 'allType') {
+        return null;
+      } else if (this.infoType == 'goods') {
+        return 1;
+      } else if (this.infoType == 'job') {
+        return 2;
+      } else if (this.infoType == 'lost') {
+        return 3;
+      }
+    }
+  },
+  watch: {
+    currentPageNum(newVal) {
+      getInfoByNum({
+        startTime: this.infoStartTime,
+        endTime: this.infoEndTime,
+        type: this.infoTypeNum,
+        pageNum: this.currentPageNum,
+        pageSize: this.pageSize
+      }).then(res => {
+        this.info = []
+        if (res.data.code == 200) {
+          this.totalPage = res.data.data.count;
+          for (let i = 0; i < res.data.data.recordList.length; i++) {
+            this.info.push(res.data.data.recordList[i])
+          }
+        }
+      }).catch(err => {
+        console.log("err = ", err)
+      })
+    }
   },
   methods: {
     handleWindowResize(event) {
@@ -198,16 +218,85 @@ export default {
       if(this.clickNotClose) return
       this.isFilterSidebarActive = !this.isFilterSidebarActive;
     },
-    toggleItemInWishList(item) {
-      this.$store.dispatch('eCommerce/toggleItemInWishList', item)
+    infoFilter(value) {
+      this.currentPageNum = 1;
+      this.infoType = value;
+      getInfoByNum({
+        startTime: this.infoStartTime,
+        endTime: this.infoEndTime,
+        type: this.infoTypeNum,
+        pageNum: this.currentPageNum,
+        pageSize: this.pageSize
+      }).then(res => {
+        this.info = [];
+        for (let i = 0; i < res.data.data.recordList.length; i++) {
+          this.info.push(res.data.data.recordList[i]);
+        }
+        this.totalPage = res.data.data.count;
+      }).catch(err => {
+        console.log("err = ", err)
+      })
     },
-    additemInCart(item) {
-      this.$store.dispatch('eCommerce/additemInCart', item)
+    timeFilter(value) {
+      this.currentPageNum = 1;
+      this.timeScope = value;
+      if (this.timeScope == 'noban') {
+        this.infoStartTime = null;
+        this.infoEndTime = null;
+      } else if (this.timeScope == 'today') {
+        this.infoStartTime = this.dateFormat(new Date(new Date())).substr(0, 10) + " 00:00:00";
+        this.infoEndTime = this.dateFormat(new Date(new Date().setDate(new Date().getDate() + 1))).substr(0, 10) + " 00:00:00";
+      } else if (this.timeScope == 'yesterday') {
+        this.infoStartTime = this.dateFormat(new Date(new Date().setDate(new Date().getDate() - 1))).substr(0, 10) + " 00:00:00";
+        this.infoEndTime = this.dateFormat(new Date(new Date())).substr(0, 10) + " 00:00:00";
+      }
+      getInfoByNum({
+        startTime: this.infoStartTime,
+        endTime: this.infoEndTime,
+        type: this.infoTypeNum,
+        pageNum: this.currentPageNum,
+        pageSize: this.pageSize
+      }).then(res => {
+        console.log(res)
+      }).catch(err => {
+        console.log(err)
+      })
     },
-    cartButtonClicked(item) {
-      if(this.isInCart(item.objectID)) this.$router.push('/apps/eCommerce/checkout')
-      else this.additemInCart(item)
+    //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化
+    dateFormat(time) {
+      let date=new Date(time);
+      let year=date.getFullYear();
+      /* 在日期格式中，月份是从0开始的，因此要加0
+       * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+       * */
+      let month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+      let day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+      let hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+      let minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+      let seconds=date.getSeconds()<10 ? "0"+date.getSeconds() : date.getSeconds();
+      // 拼接
+      return year+"-"+month+"-"+day+" "+hours+":"+minutes+":"+seconds;
     }
+  },
+  mounted() {
+    getInfoByNum({
+      startTime: this.infoStartTime,
+      endTime: this.infoEndTime,
+      type: this.infoTypeNum,
+      pageNum: this.currentPageNum,
+      pageSize: this.pageSize
+    }).then(res => {
+      console.log(res)
+      this.info = []
+      if (res.data.code == 200) {
+        this.totalPage = res.data.data.count;
+        for (let i = 0; i < res.data.data.recordList.length; i++) {
+          this.info.push(res.data.data.recordList[i]);
+        }
+      }
+    }).catch(err => {
+      console.log("err = ", err)
+    })
   },
   created() {
     this.$nextTick(() => {

@@ -172,3 +172,201 @@ export function doAddFriend(datas) {
     params: datas
   })
 }
+
+// 分页查询信息
+export function getInfoByNum(datas) {
+  return request({
+    url: '/info/list',
+    method: 'get',
+    params: datas
+  })
+}
+
+// 获取用户发布的信息
+export function getMyReleaseInfo() {
+  return request({
+    url: '/info/list/me',
+    method: 'get',
+  })
+}
+
+// 用户删除发布的信息
+export function doDeleteInfo(datas) {
+  return request({
+    url: '/info/delete',
+    method: 'delete',
+    data: datas
+  })
+}
+
+// 用户发布信息
+export function doReleaseInfo(datas) {
+  return request({
+    url: '/info/add',
+    method: 'post',
+    data: datas
+  })
+}
+
+// 更新用户信息的状态
+export function doUpdateInfoStatus(datas) {
+  return request({
+    url: '/info/update',
+    method: 'post',
+    data: datas
+  })
+}
+
+
+// 上传图片
+export function doUploadImage(datas) {
+  return request({
+    url: '/file/upload',
+    method: 'post',
+    data: datas,
+    headers: {'Content-Type': 'multipart/form-data'}
+  })
+}
+
+// 发布文章
+export function doReleaseArticle(datas) {
+  return request({
+    url: '/blog/publishBlog',
+    method: 'post',
+    params: datas
+  })
+}
+
+// 根据条件获取文章
+export function getArticleByCondition(datas) {
+  return request({
+    url: '/blog/searchBlog',
+    method: 'post',
+    params: datas
+  })
+}
+// 获取文章所有的分类
+export function getAllArticleType() {
+  return request({
+    url: '/blog/getAllCategory',
+    method: 'post',
+  })
+}
+
+// 删除文章
+export function doDeleteBlog(datas) {
+  return request({
+    url: '/blog/deleteBlog',
+    method: 'post',
+    params: datas
+  })
+}
+
+// 获取用户的所有任务
+export function getUserAllTask() {
+  return request({
+    url: '/task/list',
+    method: 'get',
+  })
+}
+
+// 添加或者修改任务
+export function doUpdateOrAddTask(datas) {
+  return request({
+    url: '/task/add',
+    method: 'post',
+    data: datas
+  })
+}
+
+// 删除任务
+export function doDeleteTask(datas) {
+  return request({
+    url: '/task/delete',
+    method: 'delete',
+    data: datas
+  })
+}
+
+// 获取日历模块所有的事件
+export function getAllCalendarEvent() {
+  return request({
+    url: '/calendar/list',
+    method: 'get'
+  })
+}
+
+// 更新日历事件
+export function doUpdateCalendarEvent(datas) {
+  return request({
+    url: '/calendar/add',
+    method: 'post',
+    data: datas
+  })
+}
+
+// 分页获取新闻
+export function getNewsByNum(datas) {
+  return request({
+    url: '/news/list',
+    method: 'get',
+    params: datas
+  })
+}
+
+// 获取新闻的所有标签
+export function getAllNewsTag() {
+  return request({
+    url: '/news/tags',
+    method: 'get',
+  })
+}
+
+// 根据新闻id获取新闻详情
+export function getNewsById(newsId) {
+  return request({
+    url: '/news/list/' + newsId,
+    method: 'get'
+  })
+}
+
+// 获取通告
+export function getAllNotice(datas) {
+  return request({
+    url: '/notice/list',
+    method: 'get',
+    params: datas
+  })
+}
+
+// 获取系统在线人数和总人数
+export function getOnlineNum() {
+  return request({
+    url: '/user/getOnlineCount',
+    method: 'get'
+  })
+}
+
+// 获取用户的博客数
+export function getUserBlogNum() {
+  return request({
+    url: '/blog/getBlogNum',
+    method: 'get'
+  })
+}
+
+// 获取帖子点赞量、帖子发布量以及近30天的数据
+export function getCardStatus() {
+  return request({
+    url: '/post/like',
+    method: 'get'
+  })
+}
+
+// 获取总的信息发布量
+export function getInfoNum() {
+  return request({
+    url: '/info/total',
+    method: 'get'
+  })
+}

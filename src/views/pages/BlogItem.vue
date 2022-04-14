@@ -25,11 +25,11 @@
                         2022-04-01
                       </vs-chip>
                       <vs-chip color="primary">
-                        标签
+                        {{blog.category}}
                       </vs-chip>
                         <feather-icon @click="toggleContent" icon="ChevronUpIcon" :class="{rotate180: isContentCollapsed}" class="ml-4" v-if="actionButtons || collapseAction" />
 <!--                        <feather-icon @click="refreshcard" icon="RotateCwIcon" class="ml-4" v-if="actionButtons || refreshContentAction" />-->
-                      <router-link :to="{path:'/pages/BlogManagement/blogDetail'}"><feather-icon @click="refreshcard" icon="LogInIcon" class="ml-4" v-if="actionButtons || refreshContentAction" /></router-link>
+                        <router-link :to="{path:'/pages/BlogManagement/blogDetail'}"><feather-icon @click="refreshcard" icon="LogInIcon" class="ml-4" v-if="actionButtons || refreshContentAction" /></router-link>
                         <feather-icon @click="openConfirm" icon="XIcon" class="ml-4" v-if="actionButtons || removeCardAction" />
                     </div>
                     <div class="vx-card__code-toggler sm:block hidden" v-if="codeToggler && !actionButtons">
@@ -261,8 +261,8 @@ export default{
             setTimeout(() => {
                 this.cardMaxHeight = `0px`
             }, 50)
-            this.$emit("remove");
-            alert(this.$props.blog.id)
+            this.$emit("removeBlog", this.blog.id);
+            // alert(this.$props.blog.id)
         },
         openConfirm() {
           this.$vs.dialog({
@@ -275,11 +275,6 @@ export default{
         },
         acceptAlert() {
           this.removeCard();
-          this.$vs.notify({
-            color: 'danger',
-            title: 'Deleted Blog',
-            text: '这篇博客已经成功删除'
-          })
         },
         toggleCode() {
             this.tempHidden = true;

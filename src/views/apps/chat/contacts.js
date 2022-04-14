@@ -20,21 +20,21 @@ export default [
     id: 1,
     name: '张三',
     about: '收到张三的新消息',
-    img: 'avatar-s-1.png',
+    img: '',
     status: 'offline'
   },
   {
     id: 2,
     name: '李四',
     about: '收到李四的新消息',
-    img: 'avatar-s-2.png',
+    img: '',
     status: 'do not disturb'
   },
   {
     id: 3,
     name: '王五',
     about: '收到王五的信息消息',
-    img: 'avatar-s-3.png',
+    img: '',
     status: 'do not disturb'
   },
 ]

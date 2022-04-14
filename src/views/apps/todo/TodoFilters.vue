@@ -8,8 +8,8 @@
 
         <!-- all -->
         <div class="px-6 py-4">
-            <div class="flex cursor-pointer" :class="{'text-primary': todoFilter == 'all'}" @click="applyTodoFilter('all')">
-                <feather-icon icon="MailIcon" :svgClasses="[{'text-primary stroke-current': todoFilter == 'all'}, 'h-6 w-6']"></feather-icon>
+            <div class="flex cursor-pointer" :class="{'text-primary': todoFilter == '所有'}" @click="applyTodoFilter('所有')">
+                <feather-icon icon="MailIcon" :svgClasses="[{'text-primary stroke-current': todoFilter == '所有'}, 'h-6 w-6']"></feather-icon>
                 <span class="text-lg ml-3">所有</span>
             </div>
         </div>
@@ -64,11 +64,13 @@ export default{
         }
     },
     computed: {
+      todoFilter() {
+        return this.$store.state.todoFilter;
+      }
     },
     methods: {
         applyTodoFilter(filterName) {
-            this.$store.dispatch('todo/applyTodoFilter', filterName);
-            this.$emit('closeSidebar', false);
+            this.$store.commit('updateTodoFilter', filterName);
         },
     },
 }

@@ -1,8 +1,6 @@
 <!--
   新闻页面
 -->
-
-
 <template>
     <div id="news-page" class="d-theme-border-grey-light rounded relative overflow-hidden">
         <div class="search-page__search-bar flex items-center">
@@ -10,21 +8,7 @@
         </div>
         <div class="search-page__serch-menu flex flex-wrap items-center md:justify-between mt-8">
             <div class="flex flex-wrap">
-                <span class="search-tab-filter">所有</span>
-                <span class="search-tab-filter">热点</span>
-                <span class="search-tab-filter">校园</span>
-                <span class="search-tab-filter">生活</span>
-                <span class="search-tab-filter">公告</span>
-                <vs-dropdown vs-trigger-click class="search-tab-filter">
-                    <span>更多</span>
-                    <vs-dropdown-menu class="search-page__more-dropdown">
-                        <vs-dropdown-item>养生</vs-dropdown-item>
-                        <vs-dropdown-item>军事</vs-dropdown-item>
-                        <vs-dropdown-item>娱乐</vs-dropdown-item>
-                        <vs-dropdown-item>体育</vs-dropdown-item>
-                        <vs-dropdown-item>科技</vs-dropdown-item>
-                    </vs-dropdown-menu>
-                </vs-dropdown>
+                <span class="search-tab-filter" v-for="item in allTags" :key="item.id">{{item.tagName}}</span>
             </div>
         </div>
         <div class="search-meta flex flex-wrap justify-between mt-6">
@@ -51,23 +35,21 @@
         <div class="vx-row mt-4 md:flex-row flex-col-reverse">
             <div class="vx-col md:w-3/5 lg:w-2/3 w-full">
                 <vx-card class="search-page__search-results lg:p-2">
-                    <div class="vx-row search-Page__search-result" v-for="(result, index) in searchResults" :key="index" :class="{ 'mt-8': index }" @click.stop="openNews(result)">
+                    <div class="vx-row search-Page__search-result" v-for="(result, index) in news" :key="index" :class="{ 'mt-8': index }" @click.stop="openNews(result)">
                         <!--新闻图片-->
-                        <div class="vx-col mb-2" :class="result.resultImg? 'lg:w-1/5 md:w-1/4 w-full' : 'w-full'" v-if="result.resultImg">
-                            <img :src="require(`@/assets/images/pages/${result.resultImg}`)" alt="result-img" class="responsive" v-if="result.resultImg">
+                        <div class="vx-col mb-2" :class="result.newsCover? 'lg:w-1/5 md:w-1/4 w-full' : 'w-full'" v-if="result.newsCover">
+                            <img :src="result.newsCover" alt="result-img" class="responsive" v-if="result.newsCover">
                         </div>
-                        <div class="vx-col" :class="result.resultImg ? 'lg:w-4/5 md:w-3/4' : 'w-full'">
+                        <div class="vx-col" :class="result.newsCover ? 'lg:w-4/5 md:w-3/4' : 'w-full'">
                             <!--新闻标题-->
-                            <a href="javascript:;" class="inline-block text-2xl"  rel="nofollow">{{ result.title }}</a><br>
-                            <!-- 新闻发布时间 -->
-                            <span v-if="result.time">{{ result.time | date(true) }} - </span>
+                            <a href="javascript:;" class="inline-block text-2xl"  rel="nofollow">{{ result.newsTitle }}</a><br>
                             <!--新闻描述-->
-                            <span>{{ result.description | truncate(225) | tailing('...') }}</span>
+                            <span>{{ result.newsContent | truncate(225) | tailing('...') }}</span>
                         </div>
                     </div>
                 </vx-card>
 
-                <vs-pagination :total="40" v-model="currentPage" class="mt-base"></vs-pagination>
+                <vs-pagination :total="totalPage" v-model="pageNum" class="mt-base"></vs-pagination>
             </div>
 
             <!-- 公告界面 -->
@@ -77,17 +59,12 @@
                   title-color="#fff"
                   content-color="#fff"
                   card-background="linear-gradient(120deg, #7f7fd5, #86a8e7, #91eae4)"
-                  remove-card-action>
-                <p class="mb-3">You can use <strong>card-background</strong> prop to change background color of card. This prop supports hex, rgba, rgb and theme colors.</p>
-                <p class="mb-3">Oat cake powder sesame snaps. Chocolate bar dessert bonbon chocolate bar pudding apple pie muffin chocolate ice cream. I love bear claw I love.</p>
+                  remove-card-action v-for="item in notice"
+                  class="mb-base">
+                 <strong>{{item.noticeContent}}</strong>
               </vx-card>
             </div>
         </div>
-<!--      <news-detail-->
-<!--          :openNewsId = "openNewsId"-->
-<!--          :isSidebarActive = "isSidebarActive"-->
-<!--          @closeSidebar="closeNewsDetail">-->
-<!--      </news-detail>-->
     </div>
 </template>
 
@@ -96,77 +73,22 @@ import { videoPlayer } from 'vue-video-player'
 import 'video.js/dist/video-js.css'
 import newsDetail from './NewsDetail.vue'
 import VuePerfectScrollbar from "vue-perfect-scrollbar";
+import {getAllNewsTag, getAllNotice, getNewsByNum} from "../../network";
 
 export default{
     data() {
         return {
-            openNewsId: 1,
-            isSidebarActive: false,
-            searchQuery: '',
-            currentPage: 1,
-            knowledgePanel: {
-                img: ['modern.jpg'],
-                title: 'Modern Admin - Clean Bootstrap 4 Dashboard HTML Template',
-                subtitle: 'Clean Bootstrap 4 Dashboard HTML Template',
-                description: 'Clean Bootstrap 4 Dashboard HTML Template + Bitcoin Dashboard can be used for any type of web applications: Project Management, eCommerce backends, CRM, Analytics, Fitness or any custom admin panels.',
-                info: [
-                    { title: '1,367', subtitle: 'Sales' },
-                    { title: '74', subtitle: 'Comments' },
-                    { title: '5', subtitle: 'Ratings' },
-                ],
-                externalLink: {
-                    title: 'View on Themeforest',
-                    icon: 'ExternalLinkIcon',
-                    url: 'https://themeforest.net/item/modern-admin-clean-bootstrap-4-dashboard-html-template/21430660',
-                },
-                resultMetaList: [
-                    { name: 'Bootstrap', value: 'v4.13 updated' },
-                    { name: 'Created', value: 'Mar 8 2018' },
-                    { name: 'Last Update', value: 'Nov 28 2018' },
-                    { name: 'Documentation', value: 'Well Documented' },
-                    { name: 'Layout', value: 'Responsive' },
-                ],
-                suggestedSearches: [
-                    { name: 'Apex', img: '1-apex.png', url: 'https://themeforest.net/item/apex-angular-4-bootstrap-admin-template/20774875'},
-                    { name: 'Convex', img: '3-convex.png', url: 'https://themeforest.net/item/convex-angular-bootstrap-admin-dashboard-template/22424619'},
-                    { name: 'Materialize', img: '4-materialize.png', url: 'https://themeforest.net/item/materialize-material-design-admin-template/11446068'},
-                    { name: 'Stack', img: '2-stack.png', url: 'https://themeforest.net/item/stack-responsive-bootstrap-4-admin-template/20039431'},
-                ]
-            },
-            searchResults: [
-                {
-                    title: 'Attire bench - Quick win shoot me an email',
-                    linkUrl: 'https://pixinvent.com/modern-admin-clean-bootstrap-4-dashboard-html-template/html/ltr/vertical-modern-menu-template/search-website.html',
-                    resultUrl: 'https://themeforest.net/user/pixinvent/portfolio?ref=pixinvent',
-                    resultImg: 'search-result.jpg',
-                    metaData: {
-                        ratings: 4.5,
-                        info: ['17 reviews', '12 votes', '28.00 USD', 'In Stock']
-                    },
-                    time: 'Mon Feb 23 2017 07:45:00 GMT+0000 (GMT)',
-                    description: 'Tiramisu soufflé gummies ice cream liquorice gingerbread sweet roll. Cake cotton candy candy ice cream muffin donut soufflé danish. Dessert jelly beans wafer cheesecake. Sugar plum gingerbread caramels candy canes gummi bears bear claw donut. Oat cake cookie tiramisu sweet halvah sugar plum. Dessert danish oat cake.',
-                    author: 'Titos'
-                },
-                {
-                    title: 'The Table - for what do you feel you would',
-                    linkUrl: 'https://pixinvent.com/modern-admin-clean-bootstrap-4-dashboard-html-template/html/ltr/vertical-modern-menu-template/search-website.html',
-                    resultUrl: 'https://themeforest.net/user/pixinvent/portfolio?ref=pixinvent',
-                    resultVideo: [{sources: [ { type: "video/mp4", src: "http://vjs.zencdn.net/v/oceans.mp4" } ], poster: 'https://surmon-china.github.io/vue-quill-editor/static/images/surmon-1.jpg'}],
-                    metaData: {
-                        info: ['1M Views', 'Uploaded by PlayStation']
-                    },
-                    time: 'Mon Jun 25 2016 07:45:00 GMT+0000 (GMT)',
-                    description: 'Tiramisu soufflé gummies ice cream liquorice gingerbread sweet roll. Cake cotton candy candy ice cream muffin donut soufflé danish. Dessert jelly beans wafer cheesecake. Sugar plum gingerbread caramels candy canes gummi bears bear claw donut. Oat cake cookie tiramisu sweet halvah sugar plum. Dessert danish oat cake.',
-                    author: 'Titos'
-                },
-                {
-                    title: 'Microdosing - deep v actually schlitz chia',
-                    linkUrl: 'https://pixinvent.com/modern-admin-clean-bootstrap-4-dashboard-html-template/html/ltr/vertical-modern-menu-template/search-website.html',
-                    resultUrl: 'https://themeforest.net/user/pixinvent/portfolio?ref=pixinvent',
-                    description: 'Wafer liquorice sweet roll jelly beans cake soufflé. Oat cake marzipan chocolate cake sesame snaps jujubes. Dragée biscuit dessert. Chocolate muffin wafer. Sugar plum icing tootsie roll gummi bears marzipan candy canes biscuit.',
-                    author: 'Titos'
-                },
-            ]
+          pageNum: 1,
+          pageSize: 2,
+          noticePageNum: 1, // 通告的当前请求页
+          noticePageSize: 2, // 每次请求通告的数量
+          openNewsId: 1,
+          totalPage: 0,
+          isSidebarActive: false,
+          searchQuery: '',
+          news: [],
+          allTags: [],
+          notice: [] // 通告
         }
     },
     computed: {
@@ -186,6 +108,23 @@ export default{
             }
         }
     },
+    watch: {
+      pageNum(newVal) {
+        // 分页获取信息新闻消息
+        getNewsByNum({
+          pageNum: this.pageNum,
+          pageSize: this.pageSize
+        }).then(res => {
+          console.log(res)
+          if (res.data.code == 200) {
+            this.news = res.data.data.recordList;
+            this.totalPage = res.data.data.count;
+          }
+        }).catch(err => {
+          console.error(err)
+        })
+      }
+    },
     methods: {
       openNews(newsDetail) {
         this.$store.commit("updateNewsDetail", newsDetail)
@@ -200,6 +139,39 @@ export default{
     components: {
         videoPlayer,
         newsDetail
+    },
+    mounted() {
+      // 获取所有的新闻标签
+      getAllNewsTag().then(res => {
+        if (res.data.code == 200) {
+          this.allTags = res.data.data;
+          // 获取所有新闻消息
+          getNewsByNum({
+            pageNum: this.pageNum,
+            pageSize: this.pageSize
+          }).then(res => {
+            console.log(res)
+            if (res.data.code == 200) {
+              this.news = res.data.data.recordList;
+              this.totalPage = res.data.data.count;
+            }
+          }).catch(err => {
+            console.error(err)
+          })
+        }
+      }).catch(err => {
+        console.error(err)
+      })
+      getAllNotice({
+        pageNum: this.noticePageNum,
+        pageSize: this.noticePageSize
+      }).then(res => {
+        if (res.data.code == 200) {
+          this.notice = res.data.data;
+        }
+      }).catch(err => {
+        console.error(err)
+      })
     }
 }
 </script>

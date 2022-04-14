@@ -147,10 +147,11 @@ export default {
                 color:'danger',
                 position:'top-right'})
             } else {
-              this.$store.commit('updateAvatar', res.data.data.headImage);
+              localStorage.setItem("role", res.data.data.role);
               localStorage.setItem("token", res.data.data.token);
               localStorage.setItem("username", res.data.data.username);
               localStorage.setItem("userId", res.data.data.id);
+              localStorage.setItem("headImage", res.data.data.headImage);
               this.$router.push('/');
             }
           }).catch(err => {

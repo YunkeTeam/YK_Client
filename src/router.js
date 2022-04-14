@@ -15,10 +15,6 @@
 
 import Vue from 'vue'
 import Router from 'vue-router'
-import auth from "@/auth/authService";
-
-import firebase from 'firebase/app'
-import 'firebase/auth'
 
 Vue.use(Router)
 
@@ -211,6 +207,21 @@ const router = new Router({
                             { title: '博客详情', active: true },
                         ],
                         pageTitle: '博客详情',
+                        rule: 'editor',
+                    },
+                },
+                // 关于界面
+                {
+                    path: '/pages/About',
+                    name: 'about',
+                    component: () => import('./views/pages/About.vue'),
+                    meta: {
+                        breadcrumb: [
+                            { title: 'Home', url: '/' },
+                            { title: '应用' },
+                            { title: '新闻', active: true },
+                        ],
+                        pageTitle: '关于',
                         rule: 'editor',
                     },
                 },

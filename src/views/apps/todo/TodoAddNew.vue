@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import {doUpdateOrAddTask} from "../../../network";
+
 export default {
     data() {
         return {
@@ -61,7 +63,6 @@ export default {
             // task fields
             title: '',
             desc: '',
-            isDone: false,
             isImportant: false,
             isStarred: false,
             tags: [],
@@ -88,20 +89,22 @@ export default {
         }
     },
     methods: {
+        // 添加任务
         addTodo() {
-            // update todo in store and clear all fields in dialog
-            const newId = this.todoArrayLength;
-            this.taskObj.id = newId;
-            this.taskObj.title = this.title;
-            this.taskObj.desc = this.desc;
-            this.taskObj.isDone = this.isDone;
-            this.taskObj.isImportant = this.isImportant;
-            this.taskObj.isStarred = this.isStarred;
-            this.taskObj.tags = this.tags;
-            this.taskObj.isTrashed = false;
-
-            this.$store.dispatch('todo/addTodo', this.taskObj);
-            this.clearFields();
+          this.taskObj.taskTitle = this.title;
+          this.taskObj.taskDesc = this.desc;
+          this.taskObj.isImportant = this.isImportant;
+          this.taskObj.isDone = false;
+          this.taskObj.isStarred = this.isStarred;
+          this.taskObj.tagNameList = this.tags;
+          this.taskObj.isTrashed = false;
+          doUpdateOrAddTask(this.taskObj).then(res => {
+            if (res.data.code == 200) {
+              this.$emit('addNewTask');
+            }
+          }).catch(err => {
+            console.error("err = ", err)
+          })
         },
         clearFields() {
             // clear all fileds in todo

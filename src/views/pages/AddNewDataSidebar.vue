@@ -13,7 +13,7 @@
 
       <div class="p-6">
         <!-- 标题 -->
-        <vs-input label="标题" name="name" v-model="name" class="mt-5 w-full" />
+        <vs-input label="标题" name="name" v-model="title" class="mt-5 w-full" />
 
         <!-- 类型 -->
         <vs-select v-model="category" label="信息类型" class="mt-5 w-full">
@@ -21,20 +21,32 @@
         </vs-select>
 
         <!-- 状态 -->
-        <vs-select v-model="order_status" label="发布状态" class="mt-5 w-full">
-          <vs-select-item :key="item.value" :value="item.value" :text="item.text" v-for="item in order_status_choices" />
-        </vs-select>
+<!--        <vs-select v-model="order_status" label="发布状态" class="mt-5 w-full">-->
+<!--          <vs-select-item :key="item.value" :value="item.value" :text="item.text" v-for="item in order_status_choices" />-->
+<!--        </vs-select>-->
 
         <!-- 描述信息 -->
-        <vs-textarea label="描述信息" name="price" v-model="price" class="mt-5 w-full" />
+        <vs-textarea label="描述信息" name="price" v-model="describe" class="mt-5 w-full" />
 
         <!-- IMG -->
-        <vs-upload text="Upload Image" class="img-upload" ref="fileUpload" />
+        <!--图片上传-->
+        <el-upload
+            class="upload-demo"
+            drag
+            action="/api/file/upload"
+            :limit="1"
+            :multiple="false"
+            :on-exceed="doSuggest"
+            :on-success="doSuccess">
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+          <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+        </el-upload>
       </div>
     </VuePerfectScrollbar>
 
     <div class="flex flex-wrap items-center justify-center p-6" slot="footer">
-      <vs-button class="mr-6">发布</vs-button>
+      <vs-button class="mr-6" @click="releaseInfo">发布</vs-button>
       <vs-button type="border" color="danger" @click="isSidebarActiveLocal = false">取消</vs-button>
     </div>
   </vs-sidebar>
@@ -42,6 +54,7 @@
 
 <script>
 import VuePerfectScrollbar from 'vue-perfect-scrollbar'
+import {doReleaseInfo} from "../../network";
 
 export default {
   props: {
@@ -52,10 +65,11 @@ export default {
   },
   data() {
     return {
-      name: '',
-      category: 'audio',
-      order_status: 'pending',
-      price: '',
+      title: '',
+      category: '未知',
+      // order_status: 'pending',
+      describe: '',
+      imgUrl: '',
 
       category_choices: [
         {text:'未知',value:'未知'},
@@ -85,15 +99,59 @@ export default {
           this.initValues();
         }
       }
+    },
+    infoTypeNum() {
+      if (this.category == '二手商品') {
+        return 1;
+      } else if (this.category == '兼职信息') {
+        return 2;
+      } else if (this.category == '失物招领') {
+        return 3;
+      } else {
+        return 0;
+      }
     }
   },
   methods: {
+    // 图片上传成功
+    doSuccess(response, file, fileList) {
+      this.imgUrl = response.data.url;
+    },
+    doSuggest() {
+      this.$vs.notify({
+        title:'提示',
+        text:'最多只能上传一张图片',
+        color:'warning'})
+    },
     initValues() {
       this.name = '';
       this.category = 'audio';
       this.order_status = 'pending';
       this.price = '';
       this.$refs.fileUpload.srcs = [];
+    },
+    releaseInfo() {
+      doReleaseInfo({
+        infoCover: this.imgUrl,
+        infoTitle: this.title,
+        infoContent: this.describe,
+        type: this.infoTypeNum
+      }).then(res => {
+        if (res.data.code === 200) {
+          this.title = "";
+          this.describe = "";
+          this.imgUrl = "";
+          this.category = '未知',
+          this.$vs.notify({
+            title:'提示',
+            text: "信息发布成功",
+            color:'success',
+            position:'top-center'})
+          this.$emit('closeSidebar')
+        }
+      }).catch(err => {
+        console.log("err = ", err)
+      })
     }
   },
   components: {
