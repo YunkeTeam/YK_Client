@@ -172,3 +172,12 @@ export function doAddFriend(datas) {
     params: datas
   })
 }
+
+// 分页查询信息
+export function getInfoByNum(datas) {
+  return request({
+    url: '/info/list',
+    method: 'get',
+    params: datas
+  })
+}

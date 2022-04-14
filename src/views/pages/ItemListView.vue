@@ -11,7 +11,7 @@
                 <!-- IMG COL -->
                 <div class="vx-col sm:w-1/4 w-full item-img-container bg-white flex items-center justify-center">
                     <img
-                        :src="require(`@/assets/images/pages/404.png`)"
+                        :src="item.infoCover ? item.infoCover : require(`@/assets/images/pages/404.png`)"
                         :alt="item.title"
                         class="grid-view-img p-4">
                 </div>
@@ -20,8 +20,8 @@
                 <div class="vx-col sm:w-1/2">
                     <div class="p-4 pt-6">
                         <slot name="item-meta">
-                            <h6 class="item-name font-semibold mb-1">{{item.title}}</h6>
-                            <p class="item-description text-sm">{{item.description}}</p>
+                            <h6 class="item-name font-semibold mb-1">{{item.infoTitle}}</h6>
+                            <p class="item-description text-sm">{{item.infoContent}}</p>
                         </slot>
                     </div>
                 </div>
@@ -39,10 +39,10 @@
                           邮箱:<h6 class="font-bold text-center">{{item.email}}</h6>
                         </div>
                         <div class="my-6">
-                          发布时间:<h6 class="font-bold text-center">{{item.releaseTime}}</h6>
+                          发布时间:<h6 class="font-bold text-center">{{item.createTime.substr(0, 10)}}</h6>
                         </div>
                         <div class="my-6">
-                          类型:<h6 class="font-bold text-center">{{item.type}}</h6>
+                          类型:<h6 class="font-bold text-center">{{itemType}}</h6>
                         </div>
                     </div>
                 </div>
@@ -61,12 +61,17 @@ export default{
         }
     },
     computed: {
-        isInCart() {
-            return (itemId) => this.$store.getters['eCommerce/isInCart'](itemId)
-        },
-        isInWishList() {
-            return (itemId) => this.$store.getters['eCommerce/isInWishList'](itemId)
-        },
+        itemType() {
+          if (this.item.type == 1) {
+            return "二手商品";
+          } else if (this.item.type == 2) {
+            return "失物招领";
+          } else if (this.item.type == 3) {
+            return "兼职信息";
+          } else {
+            return "无类型";
+          }
+        }
     },
     methods: {
         toggleItemInWishList(item) {

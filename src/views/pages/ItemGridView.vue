@@ -5,14 +5,14 @@
   <div class="grid-view-item mb-base overflow-hidden">
     <vx-card>
       <div slot="no-body">
-        <img :src="require(`@/assets/images/pages/404.png`)" alt="content-img" class="responsive card-img-top">
+        <img :src="item.infoCover ? item.infoCover : require(`@/assets/images/pages/404.png`)" alt="content-img" class="responsive card-img-top">
       </div>
-      <h5 class="mb-2">{{item.title}}</h5>
+      <h5 class="mb-2">{{item.infoTitle}}</h5>
       <div class="flex justify-between flex-wrap">
-        <span class="text-grey">{{item.releaseTime}}</span>
-        <span class="text-grey">{{item.type}}</span>
+        <span class="text-grey">{{item.createTime.substr(0, 10)}}</span>
+        <span class="text-grey">{{itemType}}</span>
       </div>
-      <p class="text-grey item-description text-sm">{{item.description}}</p>
+      <p class="text-grey item-description text-base">{{item.infoContent}}</p>
       <div class="flex justify-between flex-wrap">
         <vs-button class="mt-4 shadow-lg" type="gradient" color="#7367F0" gradient-color-secondary="#CE9FFC">{{item.username}}</vs-button>
         <vs-button class="mt-4" type="border" color="#b9b9b9">邮箱:{{item.email}}</vs-button>
@@ -29,6 +29,19 @@ export default{
       required: true
     },
   },
+  computed: {
+    itemType() {
+      if (this.item.type == 1) {
+        return "二手商品";
+      } else if (this.item.type == 2) {
+        return "失物招领";
+      } else if (this.item.type == 3) {
+        return "兼职信息";
+      } else {
+        return "无类型";
+      }
+    }
+  }
 }
 </script>
 

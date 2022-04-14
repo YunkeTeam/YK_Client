@@ -9,19 +9,19 @@
 
 
 <template>
-    <vx-card noShadow="true">
+    <vx-card :noShadow="false">
         <ul class="demo-alignment">
             <li>
-                <vs-checkbox v-model="checkBox1" vs-value="allType">全部类型</vs-checkbox>
+                <vs-radio v-model="checkBox1" vs-value="allType">全部类型</vs-radio>
             </li>
             <li>
-                <vs-checkbox v-model="checkBox1" vs-value="goods">二手商品</vs-checkbox>
+                <vs-radio v-model="checkBox1" vs-value="goods">二手商品</vs-radio>
             </li>
             <li>
-                <vs-checkbox v-model="checkBox1" vs-value="job">兼职信息</vs-checkbox>
+                <vs-radio v-model="checkBox1" vs-value="job">兼职信息</vs-radio>
             </li>
             <li>
-                <vs-checkbox v-model="checkBox1" vs-value="lost">失物招领</vs-checkbox>
+                <vs-radio v-model="checkBox1" vs-value="lost">失物招领</vs-radio>
             </li>
             
 <!--            <li class="op-block">-->
@@ -35,7 +35,7 @@
 export default {
     data() {
         return {
-            checkBox1: ['luis']
+            checkBox1: 'luis'
         }
     }
 }
