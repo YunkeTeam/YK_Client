@@ -14,7 +14,7 @@
       </div>
       <p class="text-grey item-description text-base">{{item.infoContent}}</p>
       <div class="flex justify-between flex-wrap">
-        <vs-button class="mt-4 shadow-lg" type="gradient" color="#7367F0" gradient-color-secondary="#CE9FFC">{{item.username}}</vs-button>
+        <vs-button class="mt-4 shadow-lg" type="gradient" color="#7367F0" gradient-color-secondary="#CE9FFC" @click="enterChat">{{item.username}}</vs-button>
         <vs-button class="mt-4" type="border" color="#b9b9b9">邮箱:{{item.email}}</vs-button>
       </div>
     </vx-card>
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import {doAddFriend} from "../../network";
+
 export default{
   props: {
     item: {
@@ -40,7 +42,17 @@ export default{
       } else {
         return "无类型";
       }
-    }
+    },
+  },
+  methods: {
+    enterChat() {
+      doAddFriend({
+        toId: this.item.userId
+      }).then(res => {
+      }).catch(err => {
+      })
+      this.$router.push({name: 'Chat', params: {friendId: this.item.userId}})
+    },
   }
 }
 </script>

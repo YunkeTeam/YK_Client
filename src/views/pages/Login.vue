@@ -141,6 +141,7 @@ export default {
           }, this.key).then(res => {
             // this.$vs.loading.close('#div-with-loading > .con-vs-loading')
             if (res.data["code"] !== 200) {
+              this.refresh();
               this.$vs.notify({
                 title:'错误提示',
                 text:res.data["message"],
@@ -158,14 +159,6 @@ export default {
             this.$vs.loading.close('#div-with-loading > .con-vs-loading')
             console.log(err)
           })
-        },
-
-        loginAuth0() {
-            if (this.$store.state.auth.isUserLoggedIn()) {
-                this.notifyAlreadyLogedIn();
-                return false
-            }
-            this.$auth.login({ target: this.$route.query.to });
         },
         notifyAlreadyLogedIn() {
             this.$vs.notify({

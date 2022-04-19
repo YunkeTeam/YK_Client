@@ -142,7 +142,7 @@ export default [
     url: '/pages/About',
     name: "About",
     icon: "UsersIcon",
-    slug: "external",
+    slug: "todo",
     i18n: "About",
   },
 ]

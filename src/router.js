@@ -219,7 +219,7 @@ const router = new Router({
                         breadcrumb: [
                             { title: 'Home', url: '/' },
                             { title: '应用' },
-                            { title: '新闻', active: true },
+                            { title: '关于', active: true },
                         ],
                         pageTitle: '关于',
                         rule: 'editor',

@@ -93,7 +93,11 @@ export default{
     },
     watch: {
       '$route.path'() {
-        this.$tours['vuesaxTour'].stop()
+        try {
+          this.$tours['vuesaxTour'].stop()
+        } catch (e) {
+
+        }
       }
     },
     mounted() {

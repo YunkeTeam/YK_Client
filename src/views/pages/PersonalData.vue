@@ -44,7 +44,7 @@
             <!-- CHART -->
             <template slot="no-body">
                 <div class="mt-10">
-                    <vue-apex-charts v-if="totalUserCount != 0" type=radialBar height=240 :options="analyticsData.goalOverviewRadialBar.chartOptions" :series="[this.onlineUserCount/this.totalUserCount * 100]" />
+                    <vue-apex-charts v-if="totalUserCount != 0" type=radialBar height=240 :options="analyticsData.goalOverviewRadialBar.chartOptions" :series="[(this.onlineUserCount/this.totalUserCount * 100).toFixed(2)]" />
                 </div>
             </template>
 
@@ -207,7 +207,7 @@ export default {
           },
             subscribersGained: {
             series: [{
-              name: 'Subscribers',
+              name: '获赞量',
               data: []
             }],
             chartOptions: {
@@ -265,7 +265,7 @@ export default {
           },
             ordersRecevied: {
             series: [{
-              name: 'Orders',
+              name: '发布量',
               data: []
             }],
             chartOptions: {

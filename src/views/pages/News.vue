@@ -12,7 +12,7 @@
             </div>
         </div>
         <div class="search-meta flex flex-wrap justify-between mt-6">
-            <span class="mb-4">大约 320 个结果 (0.35s)</span>
+            <span class="mb-4">实时热点新闻</span>
             <div>
                 <vs-dropdown vs-trigger-click class="cursor-pointer">
                     <span class="flex items-center">

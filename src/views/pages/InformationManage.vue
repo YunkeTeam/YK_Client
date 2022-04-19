@@ -234,7 +234,9 @@ export default {
         color: 'danger',
         title: `确认`,
         text: '您确定要删除这些数据吗？',
-        accept: this.acceptAlert
+        accept: this.acceptAlert,
+        acceptText: '确认',
+        cancelText: '取消'
       })
     },
     acceptAlert() {

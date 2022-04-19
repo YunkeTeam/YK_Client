@@ -31,7 +31,7 @@
 
                     <div class="p-4 flex flex-col w-full border border-solid d-theme-border-grey-light border-r-0 border-t-0 border-b-0">
 
-                        <div class="bg-primary flex self-end text-white py-1 px-2 rounded">
+                        <div style="cursor:pointer;" class="bg-primary flex self-end text-white py-1 px-2 rounded" @click="enterChat">
                             <span class="text-sm mr-2">{{ item.username }}</span>
                         </div>
 
@@ -53,6 +53,8 @@
 </template>
 
 <script>
+import {doAddFriend} from "../../network";
+
 export default{
     props: {
         item: {
@@ -74,6 +76,14 @@ export default{
         }
     },
     methods: {
+        enterChat() {
+          doAddFriend({
+            toId: this.item.userId
+          }).then(res => {
+          }).catch(err => {
+          })
+          this.$router.push({name: 'Chat', params: {friendId: this.item.userId}})
+        },
         toggleItemInWishList(item) {
             this.$store.dispatch('eCommerce/toggleItemInWishList', item)
         },

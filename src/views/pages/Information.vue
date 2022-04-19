@@ -19,15 +19,16 @@
 
           <div class="flex justify-between items-end flex-grow">
             <!--查询结果提示信息-->
-            <p class="font-semibold md:block hidden">5个结果在5ms被发现</p>
+            <p class="font-semibold md:block hidden">云客信息平台</p>
 
             <div class="flex flex-wrap">
 
               <!-- 排序 -->
-              <vs-select
-                  class="mr-4 vs-input-shadow-drop vs-select-no-border d-theme-input-dark-bg w-48">
-                <vs-select-item v-for="item in sortType" :key="item.value" :value="item.value" :text="item.label" />
-              </vs-select>
+              <div style="margin-right: 1rem">
+                <vs-select v-model="sortTime">
+                  <vs-select-item :key="item.value" :value="item.value" :text="item.text" v-for="item in sortType" />
+                </vs-select>
+              </div>
               <!-- ITEM VIEW - GRID/LIST -->
               <div>
                 <feather-icon
@@ -65,33 +66,23 @@
             <h6 class="font-bold mb-4">信息类型</h6>
             <info-type @infoTypeEvent="infoFilter"></info-type>
 
-            <vs-divider />
+<!--            <vs-divider />-->
 
-            <vs-button @click.prevent="true" :disabled="false">清除所有过滤</vs-button>
+<!--            <vs-button @click.prevent="true" :disabled="false">清除所有过滤</vs-button>-->
           </div>
         </vs-sidebar>
 
         <!-- RIGHT COL -->
         <div :class="{'sidebar-spacer-with-margin': clickNotClose}">
           <!-- 搜索框 -->
-<!--          <div class="relative mb-8">-->
-
-<!--            &lt;!&ndash; SEARCH INPUT &ndash;&gt;-->
-<!--            <vs-input class="w-full vs-input-shadow-drop vs-input-no-border d-theme-input-dark-bg" placeholder="Search here" v-model="currentRefinement" @input="refine($event)" @keyup.esc="refine('')"  size="large" />-->
-
-<!--            &lt;!&ndash; SEARCH LOADING &ndash;&gt;-->
-<!--            <span :hidden="!isSearchStalled">Loading...</span>-->
-
-<!--            &lt;!&ndash; SEARCH ICON &ndash;&gt;-->
-<!--            <div slot="submit-icon" class="absolute top-0 right-0 py-4 px-6" v-show="!currentRefinement">-->
-<!--              <feather-icon icon="SearchIcon" svgClasses="h-6 w-6" />-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; CLEAR INPUT ICON &ndash;&gt;-->
-<!--            <div slot="reset-icon" class="absolute top-0 right-0 py-4 px-6" v-show="currentRefinement">-->
-<!--              <feather-icon icon="XIcon" svgClasses="h-6 w-6 cursor-pointer" @click="refine('')" />-->
-<!--            </div>-->
-<!--          </div>-->
+          <div class="relative mb-8">
+            <!-- SEARCH INPUT -->
+            <vs-input class="w-full vs-input-shadow-drop vs-input-no-border d-theme-input-dark-bg" :placeholder="searchPlaceholder" v-model="currentTitle"  size="large" />
+            <!-- SEARCH ICON -->
+            <div class="absolute top-0 right-0 py-4 px-6" style="cursor: pointer" @click="clickSearch">
+              <feather-icon icon="SearchIcon" svgClasses="h-6 w-6" />
+            </div>
+          </div>
           <!-- SEARCH RESULT -->
             <div>
               <!-- GRID VIEW -->
@@ -134,6 +125,8 @@ export default {
   },
   data() {
     return {
+      searchPlaceholder: '搜索...',
+      currentTitle: '',
       totalPage: 0, // 总页数
       currentPageNum: 1, // 当前所在的页面
       pageSize: 6, // 页面上展示信息的个数
@@ -146,10 +139,10 @@ export default {
       clickNotClose: true,
       windowWidth: window.innerWidth,
       currentItemView: 'item-grid-view',
+      sortTime: '最新发布',
       sortType: [
-        { value: 'sort', label: '排序' },
-        { value: 'latest_release', label: '最新发布' },
-        { value: 'earliest_release', label: '最早发布' },
+        { text: '最新发布', value: '最新发布' },
+        { text: '最早发布', value: '最早发布' },
       ],
       info: [
         { infoCover: require(`@/assets/images/pages/404.png`), infoTitle: '皮鞋', infoContent: '这是在意大利进口的', username: 'Titos', email: '634522023@qq.com', type: 1, createTime: '2022-03-22'},
@@ -180,6 +173,14 @@ export default {
     }
   },
   watch: {
+    currentTitle(newVal) {
+      if (newVal != "") {
+        this.searchPlaceholder = '';
+      } else {
+        this.clickSearch();
+        this.searchPlaceholder = '搜索...';
+      }
+    },
     currentPageNum(newVal) {
       getInfoByNum({
         startTime: this.infoStartTime,
@@ -198,9 +199,51 @@ export default {
       }).catch(err => {
         console.log("err = ", err)
       })
+    },
+    sortTime: {
+      handler(newVal) {
+        this.currentPageNum = 1;
+        getInfoByNum({
+          startTime: this.infoStartTime,
+          endTime: this.infoEndTime,
+          type: this.infoTypeNum,
+          pageNum: this.currentPageNum,
+          pageSize: this.pageSize,
+          isEarliest: this.sortTime == '最早发布' ? true : false
+        }).then(res => {
+          if (res.data.code == 200) {
+            this.info = res.data.data.recordList;
+            this.totalPage = res.data.data.count;
+          }
+          console.log("试题 = ", this.info)
+        }).catch(err => {
+          console.log("err = ", err)
+        })
+      },
+      immediate: false
     }
   },
   methods: {
+    clickSearch() {
+      this.currentPageNum = 1;
+      getInfoByNum({
+        startTime: this.infoStartTime,
+        endTime: this.infoEndTime,
+        type: this.infoTypeNum,
+        pageNum: this.currentPageNum,
+        pageSize: this.pageSize,
+        isEarliest: this.sortTime == '最早发布' ? true : false,
+        matchTitle: this.currentTitle
+      }).then(res => {
+        if (res.data.code == 200) {
+          this.totalPage = res.data.data.count;
+          this.info = res.data.data.recordList;
+        }
+        console.log("试题 = ", this.info)
+      }).catch(err => {
+        console.log("err = ", err)
+      })
+    },
     handleWindowResize(event) {
       this.windowWidth = event.currentTarget.innerWidth;
       this.setSidebarWidth();
@@ -243,11 +286,11 @@ export default {
       if (this.timeScope == 'noban') {
         this.infoStartTime = null;
         this.infoEndTime = null;
-      } else if (this.timeScope == 'today') {
-        this.infoStartTime = this.dateFormat(new Date(new Date())).substr(0, 10) + " 00:00:00";
-        this.infoEndTime = this.dateFormat(new Date(new Date().setDate(new Date().getDate() + 1))).substr(0, 10) + " 00:00:00";
-      } else if (this.timeScope == 'yesterday') {
-        this.infoStartTime = this.dateFormat(new Date(new Date().setDate(new Date().getDate() - 1))).substr(0, 10) + " 00:00:00";
+      } else if (this.timeScope == 'week') {
+        this.infoStartTime = this.dateFormat(new Date(new Date().setDate(new Date().getDate() - 7))).substr(0, 10) + " 00:00:00";
+        this.infoEndTime = this.dateFormat(new Date(new Date())).substr(0, 10) + " 00:00:00";
+      } else if (this.timeScope == 'month') {
+        this.infoStartTime = this.dateFormat(new Date(new Date().setDate(new Date().getDate() - 30))).substr(0, 10) + " 00:00:00";
         this.infoEndTime = this.dateFormat(new Date(new Date())).substr(0, 10) + " 00:00:00";
       }
       getInfoByNum({
@@ -257,7 +300,10 @@ export default {
         pageNum: this.currentPageNum,
         pageSize: this.pageSize
       }).then(res => {
-        console.log(res)
+        if (res.data.code == 200) {
+          this.info = res.data.data.recordList;
+          this.totalPage = res.data.data.count;
+        }
       }).catch(err => {
         console.log(err)
       })

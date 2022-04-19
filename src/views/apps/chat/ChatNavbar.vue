@@ -68,13 +68,6 @@ export default{
             return (isActiveUser) ? this.$store.state.AppActiveUser.status : this.contacts[this.contactIndex].status;
         },
         toggleIsPinned() {
-            const chatData = this.$store.getters['chat/chatDataOfUser'](this.userId);
-            if(chatData) {
-                const payload = {id: this.userId, value: !this.isPinnedLocal};
-                this.$store.dispatch('chat/toggleIsPinned', payload)
-            }else{
-                this.$emit('toggleIsChatPinned', !this.isPinnedLocal)
-            }
             this.isPinnedLocal = !this.isPinnedLocal
         }
     }

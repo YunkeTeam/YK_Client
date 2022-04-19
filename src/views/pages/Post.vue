@@ -13,7 +13,7 @@
                 </div>
                 <div class="profile-img-container pointer-events-none">
                     <div>
-                        <vs-avatar class="user-profile-img" :src="userInfo.profileImg" size="85px" />
+                        <vs-avatar color="primary" class="user-profile-img" :text="userInfo.username && userInfo.username.length > 2 ? userInfo.username.substr(0, 2) : userInfo.username" :src="userInfo.profileImg" size="85px" />
                     </div>
                     <div class="profile-actions pointer-events-auto flex" @click="isReleaseCard = true">
                         <vs-button icon-pack="feather" radius icon="icon-edit-2"></vs-button>
@@ -70,9 +70,9 @@
                                 <div class="flex items-center">
                                     <div class="flex items-center"><feather-icon class="mr-2" icon="HeartIcon" svgClasses="h-5 w-5"></feather-icon> <span>{{ post.likes }}</span></div>
                                     <ul class="users-liked user-list ml-3 sm:ml-6">
-                                        <li v-for="(user, userIndex) in post.likesUserAvatar" :key="userIndex">
-                                            <vx-tooltip :text="user.name" position="bottom">
-                                                <vs-avatar :src="user.img" size="30px" class="border-2 border-white border-solid -m-1"></vs-avatar>
+                                        <li v-for="(user, userIndex) in post.likesUser" :key="userIndex">
+                                            <vx-tooltip :text="user.username" position="bottom">
+                                                <vs-avatar :src="user.headImage" size="30px" class="border-2 border-white border-solid -m-1"></vs-avatar>
                                             </vx-tooltip>
                                         </li>
                                     </ul>
@@ -125,7 +125,7 @@
                                 <span class="text-xs">{{ friend.postCount }} 篇帖子</span>
                             </div>
                             <div class="ml-auto cursor-pointer">
-                                <vs-button icon-pack="feather" icon="icon-user-plus" />
+                                <vs-button icon-pack="feather" icon="icon-user-plus" @click="addContactPerson(friend)" />
                             </div>
                         </li>
                     </ul>
@@ -166,47 +166,14 @@ export default {
           isNavOpen: false,
           userPoll: '',
           userInfo: {
+              username: '',
               profileImg: '',
           },
           mediaExtensions: { img: ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'exif', 'tiff'], video: ['avi', 'flv', 'wmv', 'mov', 'mp4', '3gp'] },
           suggestedFriends: [
-              { username: 'Carissa Dolle', headImage: 'https://static.kurihada.com/yunke/titos.jpg', postCount: 6 },
-              { username: 'Liliana Pecor', headImage: 'https://static.kurihada.com/yunke/titos.jpg', postCount: 3 },
-
           ],
           userCoverImg: 'cover.jpg',
-          userPosts: [
-              {
-                user: {
-                  username: 'Leeanna Alvord',
-                  id: 1,
-                  headImage: 'https://static.kurihada.com/yunke/profile0.jpg'
-                },
-                id: 20,
-                createTime: '2022-22-12 07:46:05',
-                isLike: true,
-                content: 'I love jujubes wafer pie ice cream tiramisu. Chocolate I love pastry pastry sesame snaps wafer. Pastry topping biscuit lollipop topping I love lemon drops sweet roll bonbon. Brownie donut icing.',
-                postCover: 'https://static.kurihada.com/yunke/profile0.jpg',
-                likes: 145,
-                comments: 77,
-                title: '',
-                len: 2,
-                likesUserAvatar: [
-                    { name: 'Trina Lynes', img: 'https://static.kurihada.com/yunke/profile0.jpg' },
-                    { name: 'Lilian Nenez', img: 'https://static.kurihada.com/yunke/profile0.jpg' },
-                    { name: 'Alberto Glotzbach', img: 'https://static.kurihada.com/yunke/profile0.jpg' },
-                    { name: 'George Nordick', img: 'https://static.kurihada.com/yunke/profile0.jpg' },
-                    { name: 'Vennie Mostowy', img: 'https://static.kurihada.com/yunke/profile0.jpg' },
-                ],
-                commentbox: '',
-                commentList: [
-                    { content: 'orthoplumbate morningtide naphthaline exarteritis', username: 'Kitty Allanson', headImage: 'https://static.kurihada.com/yunke/profile0.jpg', createTime: '2022-04-03 10:58:06' },
-                    { content: 'blockiness pandemy metaxylene speckle coppy', username: 'Jeanie Bulgrin', headImage: 'https://static.kurihada.com/yunke/profile0.jpg', createTime: '2022-04-03 10:58:06' },
-                    { content: 'blockiness pandemy metaxylene speckle coppy', username: 'Jeanie Bulgrin', headImage: 'https://static.kurihada.com/yunke/profile0.jpg', createTime: '2022-04-03 10:58:06' },
-                    { content: 'blockiness pandemy metaxylene speckle coppy', username: 'Jeanie Bulgrin', headImage: 'https://static.kurihada.com/yunke/profile0.jpg', createTime: '2022-04-03 10:58:06' },
-                ]
-              },
-          ],
+          userPosts: [],
           wasSidebarOpen: null,
       }
   },
@@ -246,6 +213,14 @@ export default {
       })
       this.$router.push({name: 'Chat', params: {friendId: post.user.id}})
     },
+    addContactPerson(friend) {
+      doAddFriend({
+        toId: friend.userId
+      }).then(res => {
+      }).catch(err => {
+      })
+      this.$router.push({name: 'Chat', params: {friendId: friend.userId}})
+    },
     closeSidebar() {
       this.isReleaseCard = false;
       this.userPosts = [];
@@ -271,10 +246,10 @@ export default {
       post.isLike = !post.isLike;
       if (post.isLike) {
         post.likes = post.likes + 1;
-        post.likesUserAvatar.push({ name: localStorage.getItem("username"), img: this.$store.state.avatar })
+        post.likesUser.push({ username: localStorage.getItem("username"), headImage: localStorage.getItem("headImage") })
       } else {
         post.likes = post.likes - 1;
-        post.likesUserAvatar.pop()
+        post.likesUser.pop()
       }
       doLikePost({
         postId: post.id
@@ -318,7 +293,6 @@ export default {
     // 发表评论
     releaseComment(post) {
       let nowTime = this.dateFormat(new Date());
-      console.log("avatar = ", this.$store.state.avatar)
       if (post.commentbox !== "") {
         doReleaseComment({
           postId: post.id,
@@ -326,7 +300,7 @@ export default {
           releaseDate: nowTime
         }).then(res => {
           if (res.data.code === 200) {
-            post.commentList.unshift({ content: post.commentbox, username: localStorage.getItem("username"), headImage: this.$store.state.avatar, createTime: nowTime })
+            post.commentList.unshift({ content: post.commentbox, username: localStorage.getItem("username"), headImage: localStorage.getItem("headImage"), createTime: nowTime })
             post.commentbox = "";
             this.$vs.notify({
               title:'提示',
@@ -360,7 +334,11 @@ export default {
       AddPostCard
   },
   mounted() {
+    this.userInfo.username = localStorage.getItem('username');
     this.userInfo.profileImg = localStorage.getItem('headImage');
+    if (this.userInfo.profileImg == "null") {
+      this.userInfo.profileImg  = "";
+    }
       this.wasSidebarOpen = this.$store.state.reduceButton;
       // this.$store.commit('TOGGLE_REDUCE_BUTTON', true)
     // 获取帖子信息
@@ -368,6 +346,7 @@ export default {
       pageNum: 1,
       pageSize: this.pageSize
     }).then(res => {
+      this.userPosts = []
       for (let i = 0; i < res.data.data.length; i++) {
         // 设置显示评论的条数
         res.data.data.len = 2;
@@ -382,6 +361,7 @@ export default {
       pageSize: this.activePageSize
     }).then(res => {
       if (res.data.code === 200) {
+        this.suggestedFriends = []
         for (let i = 0; i < res.data.data.length; i++) {
           this.suggestedFriends.push(res.data.data[i]);
         }

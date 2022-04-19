@@ -96,7 +96,7 @@
 							width="40"
 							height="40"
 							class="rounded-full shadow-md cursor-pointer block" />
-            <vs-avatar color="primary" text="Titos" :src="headImage" size="40px"/>
+            <vs-avatar color="primary" :text="username && username.length > 2 ? username.substr(0, 2) : username" :src="headImage" size="40px"/>
 					</div>
 					<vs-dropdown-menu class="vx-navbar-dropdown">
 						<ul style="min-width: 9rem">
@@ -158,6 +158,16 @@ export default {
     watch: {
         '$route'() {
             if (this.showBookmarkPagesDropdown) this.showBookmarkPagesDropdown = false
+        },
+        updateHeadImage(newVal, oldVal) {
+          if (newVal != '') {
+            this.headImage = newVal
+          }
+        },
+        updateUsername(newVal, oldVal) {
+          if (newVal != '') {
+            this.username = newVal
+          }
         }
     },
     computed: {
@@ -206,6 +216,12 @@ export default {
         },
         starredPages() {
             return this.$store.state.starredPages;
+        },
+        updateHeadImage() {
+          return this.$store.state.avatar;
+        },
+        updateUsername() {
+          return this.$store.state.username;
         },
         starredPagesLimited: {
             get() {
@@ -308,8 +324,11 @@ export default {
     mounted() {
       this.username = localStorage.getItem("username");
       this.headImage = localStorage.getItem("headImage");
+      if (this.headImage == "null") {
+        this.headImage = "";
+      }
     },
-  directives: {
+    directives: {
         'click-outside': {
             bind: function(el, binding) {
                 const bubble = binding.modifiers.bubble
@@ -333,6 +352,6 @@ export default {
         VxAutoSuggest,
         VuePerfectScrollbar,
         draggable
-    },
+    }
 }
 </script>

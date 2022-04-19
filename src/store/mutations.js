@@ -99,6 +99,9 @@ const mutations = {
     updateAvatar(state, newAvatar) {
         this.state.avatar = newAvatar;
     },
+    updateUsername(state, username) {
+        this.state.username = username;
+    },
     updateTodoFilter(state, newFilter) {
         this.state.todoFilter = newFilter;
     },

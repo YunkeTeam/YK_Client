@@ -305,6 +305,15 @@ export function doUpdateCalendarEvent(datas) {
   })
 }
 
+// 删除日历事件
+export function doDeleteCalendarEvent(datas) {
+  return request({
+    url: '/calendar/delete',
+    method: 'delete',
+    data: datas
+  })
+}
+
 // 分页获取新闻
 export function getNewsByNum(datas) {
   return request({
@@ -368,5 +377,14 @@ export function getInfoNum() {
   return request({
     url: '/info/total',
     method: 'get'
+  })
+}
+
+// 删除好友
+export function doDeleteContactPerson(datas) {
+  return request({
+    url: '/conversation/deleteDialog',
+    method: 'post',
+    params: datas
   })
 }

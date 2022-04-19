@@ -6,7 +6,7 @@
 
     <div class="vx-card app-fixed-height">
         <VuePerfectScrollbar class="scroll-area" :settings="settings">
-          <full-calendar class="w-full select-none" :events="calendarEvents" locale="en" @dayClick ="openAddNewEvent" @eventClick="openEditEvent">
+          <full-calendar v-if="fresh" class="w-full select-none" :events="calendarEvents" locale="zh-cn"  @dayClick ="openAddNewEvent" @eventClick="openEditEvent">
               <!-- 左上角标签 -->
               <div slot="fc-header-left" class="flex flex-wrap sm:justify-start justify-center">
                   <div v-for="(label, index) in calendarLabels" :key="index" class="flex items-center mr-4 mb-2">
@@ -113,7 +113,7 @@
 <script>
 import Datepicker from 'vuejs-datepicker';
 import VuePerfectScrollbar from 'vue-perfect-scrollbar';
-import {doUpdateCalendarEvent, getAllCalendarEvent} from "../../../network";
+import {doDeleteCalendarEvent, doUpdateCalendarEvent, getAllCalendarEvent} from "../../../network";
 
 export default {
   data() {
@@ -145,7 +145,8 @@ export default {
           { text: '工作', value: '工作', color: 'danger'},
           { text: '其它', value: '其它', color: 'primary'},
         ],
-        calendarEvents: []
+        calendarEvents: [],
+        fresh: true
       }
   },
   computed: {
@@ -216,6 +217,8 @@ export default {
               }
             }).catch(err => {
               console.error(err)
+            }).then(() => {
+
             })
           }
         }).catch(err => {
@@ -223,6 +226,12 @@ export default {
         })
       },
       clearFields() {
+          this.addEventId = null;
+          this.addLabelLocal = "其它";
+          this.addTitleLocal = "";
+          this.addStartLocal = "";
+          this.addEndLocal = "";
+          this.addDescLocal = "";
           this.title = this.end = this.desc = "";
           this.id = 0;
           this.labelLocal = "其它";
@@ -279,29 +288,22 @@ export default {
         }
         doUpdateCalendarEvent(obj).then(res => {
           if (res.data.code == 200) {
-            getAllCalendarEvent().then(res => {
-              if (res.data.code == 200) {
-                this.calendarEvents = [];
-                for (let i = 0; i < res.data.data.length; i++) {
-                  let obj = {};
-                  obj.id = res.data.data[i].id;
-                  obj.title = res.data.data[i].calendarTitle;
-                  obj.start = new Date(res.data.data[i].startTime.replace(/-/g,"/"));
-                  obj.end = new Date(res.data.data[i].endTime.replace(/-/g,"/"));
-                  obj.desc = res.data.data[i].calendarDesc;
-                  obj.label = res.data.data[i].tagName;
-                  obj.cssClass = 'event-' + this.labelColor(obj.label);
-                  this.calendarEvents.push(obj);
-                }
-                this.$vs.notify({
-                  title:'提示',
-                  text: '事件修改成功',
-                  color:'primary',
-                  position:'top-center'})
+            for (let i = 0; i < this.calendarEvents.length; i++) {
+              if (this.calendarEvents[i].id == this.editEventId) {
+                this.calendarEvents[i].title = this.editTitleLocal;
+                this.calendarEvents[i].start = this.editStartLocal;
+                this.calendarEvents[i].end = this.editEndLocal;
+                this.calendarEvents[i].desc = this.editDescLocal;
+                this.calendarEvents[i].label = this.editLabelLocal;
+                this.calendarEvents[i].cssClass = 'event-' + this.labelColor(this.editLabelLocal);
+                break;
               }
-            }).catch(err => {
-              console.error(err)
-            })
+            }
+            this.$vs.notify({
+              title:'提示',
+              text: '事件修改成功',
+              color:'primary',
+              position:'top-center'})
           }
         }).catch(err => {
           console.log("err = ", err)
@@ -309,6 +311,30 @@ export default {
       },
       removeEvent() {
           // this.$store.dispatch('calendar/removeCalendarEvent', this.id)
+        doDeleteCalendarEvent({
+          idList: [this.editEventId]
+        }).then(res => {
+          if (res.data.code == 200) {
+            this.calendarEvents = this.calendarEvents.filter((faq) => {
+              if (faq.id == this.editEventId) {
+                return false;
+              } else {
+                return true;
+              }
+            })
+            this.fresh = false;
+            this.$nextTick(() => {
+              this.fresh = true;
+            })
+            this.$vs.notify({
+              title:'提示',
+              text: '事件删除成功',
+              color:'primary',
+              position:'top-center'})
+          }
+        }).catch(err => {
+          console.log(err)
+        })
       },
   },
   components: {

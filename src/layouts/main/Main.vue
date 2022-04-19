@@ -117,7 +117,8 @@ export default {
             disableCustomizer: themeConfig.disableCustomizer,
             windowWidth: window.innerWidth, //width of windows
             hideScrollToTop: themeConfig.hideScrollToTop,
-            disableThemeTour: themeConfig.disableThemeTour,
+            // disableThemeTour: themeConfig.disableThemeTour,
+            disableThemeTour: false,
             // 界面侧边导航栏数据
             steps: [
                 {

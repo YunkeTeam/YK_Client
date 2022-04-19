@@ -7,7 +7,7 @@
             <div class="chat__profile-search flex p-4">
                 <!--头像-->
                 <div class="relative inline-flex">
-                    <vs-avatar class="m-0 border-2 border-solid border-white" color="primary" text="Titos" :src="headImage" size="40px" />
+                    <vs-avatar class="m-0 border-2 border-solid border-white" color="primary" :text="username && username.length > 2 ? username.substr(0, 2) : username" :src="headImage" size="40px" />
                     <div class="h-3 w-3 border-white border border-solid rounded-full absolute right-0 bottom-0" :class="'bg-success'"></div>
                 </div>
                 <!--好友搜索-->
@@ -22,7 +22,7 @@
                     <h3 class="text-primary mb-5 px-4">正在聊天</h3>
                     <ul class="chat__active-chats bordered-items">
                         <li class="cursor-pointer" v-for="contact in chatting" :key="contact.friendId" @click="updateActiveChatUser(contact)">
-                            <chat-contact :friendImg="contact.headImage" :contact="contact" :lastMessaged="contact.sendTime" :unseenMsg="contact.notReadNum" :isActiveChatUser="isActiveChatUser(contact)"></chat-contact>
+                            <chat-contact @deleteFriend="deleteFriend" :friendImg="contact.headImage" :contact="contact" :lastMessaged="contact.sendTime" :unseenMsg="contact.notReadNum" :isActiveChatUser="isActiveChatUser(contact)"></chat-contact>
                         </li>
                     </ul>
                 </div>
@@ -32,8 +32,8 @@
                 <div class="chat__contacts">
                     <h3 class="text-primary mb-5 px-4">好友列表</h3>
                     <ul class="chat__contacts bordered-items">
-                        <li class="cursor-pointer" v-for="contact in friendList" :key="contact.friendId" @click="updateActiveChatUser(contact)">
-                            <chat-contact :contact="contact" :unseenMsg="contact.notReadNum" :friendImg="contact.headImage"></chat-contact>
+                        <li class="cursor-pointer" v-for="contact in filteredFaq" :key="contact.friendId" @click="updateActiveChatUser(contact)">
+                            <chat-contact @deleteFriend="deleteFriend" :contact="contact" :unseenMsg="contact.notReadNum" :friendImg="contact.headImage"></chat-contact>
                         </li>
                     </ul>
                 </div>
@@ -78,8 +78,9 @@ export default{
     name: 'vx-sidebar',
     data() {
         return {
-          wsUrl: 'ws://127.0.0.1:8080/conversation/chat',
+          wsUrl: 'ws://124.223.38.131:8080/conversation/chat',
           headImage: '',
+          username: '',
           websocket: null,
           active: true,
           isHidden: false,
@@ -100,30 +101,14 @@ export default{
           // 好友列表所有的聊天信息
           chatting: [],
           friendList: [
-            {
-              friendId: 1,
-              userName: '张三',
-              content: '收到张三的新消息',
-              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
-              sendTime: '2022-04-12 02:35:13',
-              notReadNum: 1
-            },
-            {
-              friendId: 2,
-              userName: '李四',
-              content: '收到李四的新消息',
-              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
-              sendTime: '2022-04-12 02:35:13',
-              notReadNum: 2
-            },
-            {
-              friendId: 3,
-              userName: '王五',
-              content: '收到王五的信息消息',
-              headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
-              sendTime: 'do not disturb',
-              notReadNum: null
-            },
+            // {
+            //   friendId: 1,
+            //   userName: '张三',
+            //   content: '收到张三的新消息',
+            //   headImage: 'https://static.kurihada.com/yunke/profile0.jpg',
+            //   sendTime: '2022-04-12 02:35:13',
+            //   notReadNum: 1
+            // },
           ],
           searchQuery: '' // 搜索框的内容
         }
@@ -132,6 +117,15 @@ export default{
         // 是否是被点击的用户
         isActiveChatUser() {
             return (contact) => this.activeChatUser !== null ? contact.friendId == this.activeChatUser.friendId : false
+        },
+        filteredFaq() {
+          return this.friendList.filter((faq) => {
+            if (faq.userName.includes(this.searchQuery)) {
+              return true;
+            } else {
+              return false;
+            }
+          });
         }
     },
     watch: {
@@ -141,7 +135,26 @@ export default{
       }
     },
     methods: {
-        closeProfileSidebar(value) {
+      deleteFriend(friend) {
+        this.friendList = this.friendList.filter((friendItem) => {
+          if (friendItem.friendId == friend.friendId) return false;
+          else return true;
+        })
+        this.chatting = this.chatting.filter((friendItem) => {
+          if (friendItem.friendId == friend.friendId) return false;
+          else return true;
+        })
+        if (this.activeChatUser.friendId == friend.friendId) {
+          this.activeChatUser = null;
+        }
+        this.$vs.notify({
+          color: 'danger',
+          title: '删除通知',
+          text: '好友'+friend.userName + '已被删除',
+          position:'top-left'
+        })
+      },
+      closeProfileSidebar(value) {
             this.activeProfileSidebar = value
         },
         updateUserProfileId(userId) {
@@ -174,8 +187,13 @@ export default{
             releaseTime: releaseTime
           });
           this.typedMessage = '';
+        this.$refs.chatLogPS.$el.scrollTop = this.$refs.chatLog.scrollHeight;
+        for (let i = 0; i < this.chatting.length; i++) {
+            if (this.chatting[i].friendId == this.activeChatUser.friendId) {
+              return;
+            }
+        }
           this.chatting.push(this.activeChatUser);
-          this.$refs.chatLogPS.$el.scrollTop = this.$refs.chatLog.scrollHeight;
         },
         //时间格式化函数，此处仅针对yyyy-MM-dd hh:mm:ss 的格式进行格式化
         dateFormat(time) {
@@ -288,7 +306,11 @@ export default{
       this.setSidebarWidth();
     },
     mounted() {
+      this.username = localStorage.getItem("username");
       this.headImage = localStorage.getItem("headImage");
+      if (this.headImage == "null") {
+        this.headImage = "";
+      }
       this.initWebSocket()
       // 获取个人好友列表
       getAllContactPerson().then(res => {

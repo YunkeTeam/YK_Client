@@ -18,7 +18,7 @@
                                 </div>
                                 <div class="clearfix">
                                     <vs-input
-                                        v-validate="'required|alpha_dash|min:3'"
+                                        v-validate="'required'"
                                         data-vv-validate-on="blur"
                                         label-placeholder="Username"
                                         name="username"
@@ -42,7 +42,7 @@
                                         ref="password"
                                         type="password"
                                         data-vv-validate-on="blur"
-                                        v-validate="'required|min:6|max:10'"
+                                        v-validate="'required|min:8|max:15'"
                                         name="password"
                                         label-placeholder="Password"
                                         placeholder="密码"
@@ -52,7 +52,7 @@
 
                                     <vs-input
                                         type="password"
-                                        v-validate="'min:6|max:10|confirmed:password'"
+                                        v-validate="'min:8|max:15|confirmed:password'"
                                         data-vv-validate-on="blur"
                                         data-vv-as="password"
                                         name="confirm_password"
@@ -116,7 +116,7 @@ export default {
             email: '',
             password: '',
             confirm_password: '',
-            isTermsConditionAccepted: true,
+            isTermsConditionAccepted: false,
             verifyCode: '', // 用户输入的验证码
             imgUrl: '', // 验证码的url地址
             key: '' // redis中存储验证码的key
@@ -138,6 +138,7 @@ export default {
             }, this.key).then(res=> {
               console.log("res = ", res)
               if (res.data.code !== 200) {
+                this.refresh();
                 this.$vs.notify({
                   title:'错误提示',
                   text:res.data.message,

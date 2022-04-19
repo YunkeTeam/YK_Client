@@ -61,8 +61,8 @@ export default{
         // 发送者的头像
         senderImg() {
             return (isSentByActiveUser) => {
-                if (isSentByActiveUser) return localStorage.getItem("headImage");
-                else return this.friend.headImage;
+                if (isSentByActiveUser) return localStorage.getItem("headImage") != "null" ? localStorage.getItem("headImage") : "";
+                else return this.friend.headImage != "null" ? this.friend.headImage : "";
             }
         },
         hasSentPreviousMsg() {

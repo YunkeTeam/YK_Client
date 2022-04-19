@@ -9,9 +9,9 @@
           <div class="vx-col w-full lg:w-1/4">
             <vx-card class="p-2 mt-base">
               <div class="text-center">
-                <h4>{{ card.name }}</h4>
+                <h4>{{ username }}</h4>
               </div>
-              <vs-avatar color="primary" :text="$cookies.get('username')" :src="imageUrl" size="80px" class="mx-auto my-6 block"/>
+              <vs-avatar color="primary" :text="username && username.length > 2 ? username.substr(0, 2) : username" :src="imageUrl" size="80px" class="mx-auto my-6 block"/>
               <div class="flex justify-between text-center">
                 <span>
                     <p class="text-xl font-semibold">{{ totalReleasePostNum }}</p>
@@ -308,8 +308,9 @@ export default{
         }).then(res => {
           if (res.data.code === 200) {
             localStorage.setItem("username", this.username);
-            localStorage.setItem("headImage", this.headImage);
+            localStorage.setItem("headImage", this.imageUrl);
             this.$store.commit('updateAvatar', this.imageUrl);
+            this.$store.commit('updateUsername', this.username);
             this.$vs.notify({ title: '更新提示', text: '用户信息修改成功', color: 'success', position: 'top-center' })
           }
         }).catch(err => {
@@ -317,7 +318,7 @@ export default{
         })
       },
       handleAvatarSuccess(res, file) {
-        this.imageUrl = URL.createObjectURL(file.raw);
+        this.imageUrl = file.response.data.url;
       },
       beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg';

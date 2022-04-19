@@ -120,6 +120,10 @@
                                 <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="(item,index) in routerTransitionsList" />
                             </vs-select>
                         </div>
+                        <vs-divider></vs-divider>
+                        <div class="mt-4 flex justify-center">
+                          <vs-button type="gradient" @click="recoverSettings">恢复默认设置</vs-button>
+                        </div>
                     </div>
                 </VuePerfectScrollbar>
             </div>
@@ -175,48 +179,74 @@ export default {
         }
     },
     computed: {
+        // 黑暗模式
         theme: {
             get() {
                 return this.$store.state.theme;
             },
             set(val) {
                 this.$store.dispatch('updateTheme', val);
+                localStorage.setItem("theme", val);
             }
         },
+        // 折叠边栏
         reduced_sidebar: {
             get() { return this.$store.state.reduceButton },
-            set(val) { this.$store.commit('TOGGLE_REDUCE_BUTTON', val) }
+            set(val) {
+              console.log("设置了该值: ", val)
+              this.$store.commit('TOGGLE_REDUCE_BUTTON', val);
+              localStorage.setItem("reduced_sidebar", val);
+            }
         },
+        // 导航栏类型
         navbarTypeLocal: {
             get() {
               return 'navbar-' + this.navbarType
             },
             set(val) {
+              localStorage.setItem("navbarTypeLocal", val);
               this.$emit('updateNavbar', val.replace("navbar-", ""))
             }
         },
+        // 导航栏颜色
         navbarColorLocal: {
             get() { return this.navbarColor; },
             set(val) {
               if(this.navbarType == 'static') return
               this.$emit('updateNavbarColor', val)
+              localStorage.setItem("navbarColorLocal", val);
             }
         },
+        // 页脚类型
         footerTypeLocal: {
             get() { return this.footerType; },
-            set(val) { this.$emit('updateFooter', val) }
+            set(val) {
+              this.$emit('updateFooter', val)
+              localStorage.setItem("footerTypeLocal", val);
+            }
         },
+        // 路由器动画
         routerTransitionLocal: {
             get() { return this.routerTransition; },
-            set(val) { this.$emit('updateRouterTransition', val) }
+            set(val) {
+              this.$emit('updateRouterTransition', val)
+              localStorage.setItem("routerTransitionLocal", val);
+            }
         },
         primaryColor: {
             get() { return this.$store.state.themePrimaryColor },
-            set(val) { this.$store.commit('UPDATE_PRIMARY_COLOR', val) }
+            set(val) {
+              this.$store.commit('UPDATE_PRIMARY_COLOR', val)
+              localStorage.setItem("primaryColor", val);
+            }
         },
+        // 隐藏滚动到顶部
         hideScrollToTopLocal: {
             get() { return this.hideScrollToTop },
-            set(val) { this.$emit('toggleHideScrollToTop', val) }
+            set(val) {
+              this.$emit('toggleHideScrollToTop', val)
+              localStorage.setItem("hideScrollToTopLocal", val);
+            }
         },
 
         // Navbar color options classes
@@ -230,13 +260,53 @@ export default {
         }
     },
     methods: {
+        recoverSettings() {
+          localStorage.removeItem("theme");
+          localStorage.removeItem("reduced_sidebar");
+          localStorage.removeItem("navbarTypeLocal");
+          localStorage.removeItem("navbarColorLocal");
+          localStorage.removeItem("footerTypeLocal");
+          localStorage.removeItem("routerTransitionLocal");
+          localStorage.removeItem("primaryColor");
+          localStorage.removeItem("hideScrollToTopLocal");
+          location.reload();
+        },
         updatePrimaryColor(color) {
             this.primaryColor = color;
             this.$vs.theme({ primary: color });
+            localStorage.setItem("primaryColor", color);
         }
     },
     components: {
         VuePerfectScrollbar,
+    },
+    created() {
+      if (localStorage.getItem("theme") != null) {
+        this.theme = localStorage.getItem("theme");
+      }
+      if (localStorage.getItem("reduced_sidebar") != null) {
+        console.log("localStorage ===== ", localStorage.getItem("reduced_sidebar"))
+        this.reduced_sidebar = localStorage.getItem("reduced_sidebar") == "true";
+      }
+      if (localStorage.getItem("navbarTypeLocal") != null) {
+        this.navbarTypeLocal = localStorage.getItem("navbarTypeLocal");
+        this.navbarType = localStorage.getItem("navbarTypeLocal").replace("navbar-", "")
+      }
+      if (localStorage.getItem("navbarColorLocal") != null) {
+        this.navbarColorLocal = localStorage.getItem("navbarColorLocal");
+      }
+      if (localStorage.getItem("footerTypeLocal") != null) {
+        this.footerTypeLocal = localStorage.getItem("footerTypeLocal");
+      }
+      if (localStorage.getItem("routerTransitionLocal") != null) {
+        this.routerTransitionLocal = localStorage.getItem("routerTransitionLocal");
+      }
+      if (localStorage.getItem("primaryColor") != null) {
+        this.updatePrimaryColor(localStorage.getItem("primaryColor"))
+      }
+      if (localStorage.getItem("hideScrollToTopLocal") != null) {
+        this.hideScrollToTopLocal = localStorage.getItem("hideScrollToTopLocal") == "true";
+      }
     }
 }
 </script>

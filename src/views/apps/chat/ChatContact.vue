@@ -17,10 +17,15 @@
                 <vs-avatar color="primary" :text="`${unseenMsg}`" size="20px" v-if="unseenMsg" />
             </div>
         </div>
+      <li class="px-4 flex items-start cursor-pointer hover:text-primary" @click.stop="moveTo()">
+        <feather-icon icon="TrashIcon" svg-classes="h-5 w-5"></feather-icon>
+      </li>
     </div>
 </template>
 
 <script>
+    import {doDeleteContactPerson} from "../../../network";
+
     export default{
         props: {
             contact: {
@@ -39,5 +44,32 @@
                 type: Boolean,
             }
         },
+        methods: {
+          moveTo() {
+            this.openConfirm();
+          },
+          openConfirm() {
+            this.$vs.dialog({
+              type: 'confirm',
+              color: 'danger',
+              title: `确认`,
+              text: '您确定要删除好友'+this.contact.userName+'吗？',
+              accept: this.acceptAlert,
+              acceptText: '确认',
+              cancelText: '取消'
+            })
+          },
+          acceptAlert() {
+            doDeleteContactPerson({
+              toId: this.contact.friendId
+            }).then(res => {
+              if (res.data.code == 200) {
+                this.$emit("deleteFriend", this.contact)
+              }
+            }).catch(err => {
+              console.log(err)
+            })
+          }
+        }
     }
 </script>

@@ -2,17 +2,17 @@ import axios from 'axios'
 import Vue from "vue";
 
 // 全局默认配置
-let baseURL
-// 判断开发环境(一般用于本地代理)
-if (process.env.NODE_ENV === 'development') { // 开发环境
-  baseURL = '/api' // 你设置的本地代理请求(跨域代理)
-} else { // 编译环境
-  if (process.env.type === 'test') { // 测试环境
-    baseURL = 'http://localhost:8082'
-  } else { // 正式环境
-    baseURL = 'http://localhost:8081'
-  }
-}
+let baseURL='/api'
+// // 判断开发环境(一般用于本地代理)
+// if (process.env.NODE_ENV === 'development') { // 开发环境
+//   baseURL = '/api' // 你设置的本地代理请求(跨域代理)
+// } else { // 编译环境
+//   if (process.env.type === 'test') { // 测试环境
+//     baseURL = 'http://124.223.38.131:8080'
+//   } else { // 正式环境
+//     baseURL = 'http://124.223.38.131:8080'
+//   }
+// }
 
 // 请求配置文件，axios的配置都在这里进行
 export default function request(config) {
